@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Grupo Alzar</title>
+  <!-- Compiled and minified CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Cambios personales -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pikaday.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="node_modules/angular-bootstrap-colorpicker/css/colorpicker.min.css">
+
+</head>
+
+<body ng-controller="ctrl">
+  <header>
+    <div class="navbar-fixed">
+      <nav class="white black-text">
+        <div class="nav-wrapper black-text">
+          <a href="index.html" class="brand-logo center black-text">
+            <img src="img/logo.png" height="50px" width="auto"> </a>
+
+          <ul id="nav-mobile" class="left ">
+            <li>
+              <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                <i class="material-icons black-text">menu</i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+  </header>
+  <main class="grey lighten-4">
+    <div class="row" id="agenciasListado">
+      <div class="col s12 ">
+        <br>
+        <br>
+        <nav>
+          <div class="nav-wrapper">
+            <div ng-if="userTipo == 'coordinador'" class="col s12">
+              <select class="browser-default black-text" ng-model="condominioSeleccionado" name="condominioSeleccionado" required style="margin-top: 10px"
+                ng-change="cargarCondominio(condominioSeleccionado)">
+                <option value="" disabled selected>Selecciona un condominio</option>
+                <option ng-repeat="(key, condominio) in condominios" value="{{condominio.$id}}">{{condominio.nombre}}</option>
+              </select>
+            </div>
+          </div>
+        </nav>
+        <br>
+        <br>
+        <nav>
+          <div class="nav-wrapper">
+            <form>
+              <div class="input-field">
+                <input ng-model="search" id="search" type="search" required>
+                <label class="label-icon" for="search">
+                  <i class="material-icons">search</i>
+                </label>
+                <i ng-click="borrarSearch()" class="material-icons">close</i>
+              </div>
+            </form>
+          </div>
+        </nav>
+        <div class="tableContainer white">
+          <table class="highlight centered table ">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Foto</th>
+                <th>Album</th>
+                <th>No disponibles</th>
+                <th>Por horarios</th>
+                <th>Editar</th>
+                <th>Condiciones</th>
+                <th>Eliminar</th>
+                <th>Creador</th>
+                <th>F. Creación</th>
+                <th>F. Última Ed.</th>
+              </tr>
+            </thead>
+
+            <tbody id="tablaUsuarios" ng-if="noCargando">
+              <tr ng-if="res.length" ng-repeat="(i, condominio) in res = ( data | filter:search)">
+                <td ng-bind="condominio.codigo"></td>
+                <td ng-bind="condominio.nombre"></td>
+                <td ng-bind="condominio.descripcion"></td>
+                <td>
+                  <i ng-click="modificarFoto(i)" class="green-text center-align material-icons center">add_a_photo</i>
+                  <img imageonload src="img/placeholder.png" ng-src="{{condominio.foto.imagen}}" alt="" srcset="" height="40px">
+                </td>
+                <td>
+                  <i ng-click="verAlbum(i)" class="green-text center-align material-icons center">photo_album</i>
+                </td>
+                <td>
+                  <i ng-click="verNoDisponibles(i)" class="green-text center-align material-icons center">not_interested</i>
+                </td>
+                <td>
+                  <i ng-if="condominio.especial" ng-click="verHorarios(i)" class="blue-text center-align material-icons center">schedule</i>
+                  <p ng-if="!condominio.especial"></p>
+                </td>
+                <td>
+                  <i ng-click="editarModal(i)" class="blue-text center-align material-icons center">edit</i>
+                </td>
+                <td>
+                  <i ng-click="editarCondiciones(i)" class="blue-text center-align material-icons center">edit</i>
+                </td>
+                <td>
+                  <i ng-click="eliminarModal(i)" class="red-text center-align material-icons center">delete</i>
+                </td>
+                <td ng-bind="condominio.creador"></td>
+                <td ng-bind="condominio.creacion | date:'dd/MM/yyyy HH:MM'"></td>
+                <td ng-bind="condominio.modficacion | date:'dd/MM/yyyy HH:MM'">no se ha modificado</td>
+              </tr>
+              <tr ng-if="!res.length">
+                <td colspan="12">
+                  <h5 class="center-align">No hay amenidades que mostrar</h5>
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!noCargando">
+              <tr>
+                <td colspan="12">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <ul id="slide-menu" class="side-nav">
+
+  </ul>
+
+  <!-- Modal Structure -->
+  <div id="crearModal" class="modal modal-fixed-footer">
+    <form id="crearForm" name="crearForm" class=" black-text" ng-submit="crear(crearForm.$valid)">
+      <div class="modal-content white">
+        <div class="topModal ">
+          <h4>Crear una Amenidad</h4>
+          <i class="large material-icons">tag_faces</i>
+        </div>
+        <br>
+        <div class="row">
+          <div class="col s12 center-align">
+            <h5 class="center-align">* Campos obligatorios</h5>
+          </div>
+        </div>
+        <div class="row">
+          <h4 class="center-align">Datos generales</h4>
+          <br>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.codigo" name="codigo" type="text" class="validate" required="">
+            <label for="codigo">*Código para la amenidad</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.nombre" name="nombre" type="text" class="validate" required="">
+            <label for="nombre">*Nombre para la amenidad</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.capacidad" name="capacidad" type="number" class="validate" required="">
+            <label for="capacidad">*Capacidad</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.horas_prestadas" name="horas_prestadas" step="1" min="1" type="number" class="validate" required="">
+            <label for="horas_prestadas">*Horas prestadas</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.descripcion" name="descripcion" type="text" class="validate" required="">
+            <label for="descripcion">*Descripción</label>
+          </div>
+        </div>
+        <div class="row">
+          <h4 class="center-align">Normas y reglamentos</h4>
+          <br>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.reglamento" name="reglamento" type="url" class="validate">
+            <label for="reglamento">Reglamento, estatutos y normas</label>
+          </div>
+        </div>
+        <div class="row">
+          <h4 class="center-align">Inventario y mobiliario</h4>
+          <br>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.inventario" name="inventario" type="text" class="validate">
+            <label for="inventario">Inventario</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.mobiliario" name="mobiliario" type="text" class="validate">
+            <label for="mobiliario">Mobiliario y Equipo</label>
+          </div>
+        </div>
+        <div class="row center-align">
+          <h4 class="center-align">Precios</h4>
+          <br>
+          <p class="center-align">Ingrese o el costo por hora o el costo por uso</p>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.costo_hora" name="costo_hora" type="number" step="0.01" min="0" class="validate">
+            <label for="costo_hora">Costo por hora (opcional)</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.costo_uso" name="costo_uso" type="number" step="0.01" min="0" class="validate">
+            <label for="costo_uso">Costo por uso (opcional)</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.horas_uso" name="horas_uso" type="number" min="1" max="20" step="1" class="validate">
+            <label for="horas_uso">Horas proporcionadas por uso (opcional)</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.horas_maximas" name="horas_maximas" type="number" step="1" min="0" class="validate">
+            <label for="horas_maximas">*Cantidad máxima de horas </label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.deposito" name="deposito" step="0.01" min="0" type="number" class="validate">
+            <label for="deposito">Depósito</label>
+          </div>
+        </div>
+        <div class="row">
+          <h4 class="center-align">Datos de reserva</h4>
+          <br>
+          <br>
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <br>
+            <br>
+            <small class="center-align">Horario normal</small>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class=" col s12">
+              <label>*Días disponibles</label>
+              <select style="height: 180px;" class="browser-default" ng-model="new.dias" multiple>
+                <option value="" disabled selected>Selecciona los días disponibles en horario normal</option>
+                <option value="lunes">Lunes</option>
+                <option value="martes">Martes</option>
+                <option value="miercoles">Miércoles</option>
+                <option value="jueves">Jueves</option>
+                <option value="viernes">Viernes</option>
+                <option value="sabado">Sábado</option>
+                <option value="domingo">Domingo</option>
+              </select>
+            </div>
+            <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+              <input ng-model="new.hora_minima" name="hora_minima" type="number" min="0" max="24" step="1" class="validate" required="">
+              <label for="hora_minima">*Hora mínima de uso (Formato de 24 horas)</label>
+            </div>
+            <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+              <input ng-model="new.hora_maxima" name="hora_maxima" type="number" min="0" max="28" step="1" class="validate" required="">
+              <label for="hora_maxima">*Hora máxima de uso (Formato de 24 horas)</label>
+            </div>
+          </div>
+          <br>
+          <br>
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <br>
+            <br>
+            <small class="center-align">Horario especial (seleccione los días que afecta este horario con sus respectivas horas)</small>
+          </div>
+          <div class="row">
+            <div class="col s12">
+              <h4 class="center-align">¿La amenidad se administra por horarios especiales?</h4>
+            </div>
+            <div class="col s4 offset-s4">
+              <div class="switch">
+                <label>
+                  No
+                  <input ng-model="new.especial" type="checkbox">
+                  <span class="lever"></span>
+                  Si
+                </label>
+              </div>
+            </div>
+          </div>
+          <div ng-if="new.especial" class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class=" col s12">
+              <label>Días disponibles especiales</label>
+              <select style="height: 180px;" class="browser-default" ng-model="new.dias_especiales" multiple>
+                <option value="" disabled selected>Selecciona los días disponibles especiales</option>
+                <option value="lunes">Lunes</option>
+                <option value="martes">Martes</option>
+                <option value="miercoles">Miércoles</option>
+                <option value="jueves">Jueves</option>
+                <option value="viernes">Viernes</option>
+                <option value="sabado">Sábado</option>
+                <option value="domingo">Domingo</option>
+              </select>
+            </div>
+            <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+              <input ng-model="new.hora_minima_especial" name="hora_minima_especial" type="number" min="0" max="24" step="1" class="validate"
+                required="">
+              <label for="hora_minima_especial">Hora mínima especial (Formato de 24 horas)</label>
+            </div>
+            <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+              <input ng-model="new.hora_maxima_especial" name="hora_maxima_especial" type="number" min="0" max="24" step="1" class="validate"
+                required="">
+              <label for="hora_maxima_especial">Hora máxima especial (Formato de 24 horas)</label>
+            </div>
+          </div>
+        </div>
+        <div style="height:200px;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+        <button type="submit" class="waves-effect waves-green btn ">Crear</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="editarModal" class="modal modal-fixed-footer">
+    <form id="editarForm" name="editarForm" class=" black-text" ng-submit="guardar(editarForm.$valid)">
+      <div class="modal-content white">
+        <div class="topModal ">
+          <h4>Editar una Amenidad</h4>
+          <i class="large material-icons">tag_faces</i>
+        </div>
+        <br>
+        <div class="row">
+          <div class="col s12 center-align">
+            <h5 class="center-align">* Campos obligatorios</h5>
+          </div>
+        </div>
+        <div class="row">
+          <h4 class="center-align">Datos generales</h4>
+          <br>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.codigo" name="codigo" type="text" class="validate" required="">
+            <label for="codigo">*Código para la amenidad</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.nombre" name="nombre" type="text" class="validate" required="">
+            <label for="nombre">*Nombre para la amenidad</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.capacidad" name="capacidad" type="number" class="validate" required="">
+            <label for="capacidad">*Capacidad</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.horas_prestadas" name="horas_prestadas" step="1" min="1" type="number" class="validate" required="">
+            <label for="horas_prestadas">*Horas prestadas</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.descripcion" name="descripcion" type="text" class="validate" required="">
+            <label for="descripcion">*Descripción</label>
+          </div>
+        </div>
+        <div class="row">
+          <h4 class="center-align">Normas y reglamentos</h4>
+          <br>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.reglamento" name="reglamento" type="url" class="validate">
+            <label for="reglamento">Reglamento, estatutos y normas</label>
+          </div>
+        </div>
+        <div class="row">
+          <h4 class="center-align">Inventario y mobiliario</h4>
+          <br>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.inventario" name="inventario" type="text" class="validate">
+            <label for="inventario">Inventario</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.mobiliario" name="mobiliario" type="text" class="validate">
+            <label for="mobiliario">Mobiliario y Equipo</label>
+          </div>
+        </div>
+        <div class="row center-align">
+          <h4 class="center-align">Precios</h4>
+          <br>
+          <p class="center-align">Ingrese o el costo por hora o el costo por uso</p>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.costo_hora" name="costo_hora" type="number" min="0" step="0.01" class="validate">
+            <label for="costo_hora">Costo por hora (opcional)</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.costo_uso" name="costo_uso" type="number" min="0" step="0.01" class="validate">
+            <label for="costo_uso">Costo por uso (opcional)</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.horas_uso" name="horas_uso" type="number" min="1" max="20" step="1" class="validate">
+            <label for="horas_uso">Horas proporcionadas por uso (opcional)</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.horas_maximas" name="horas_maximas" type="number" step="1" min="0" class="validate">
+            <label for="horas_maximas">*Cantidad máxima de horas </label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.deposito" step="0.01" min="0" name="deposito" type="number" class="validate">
+            <label for="deposito">Depósito</label>
+          </div>
+        </div>
+        <div class="row">
+          <h4 class="center-align">Datos de reserva</h4>
+          <br>
+          <br>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class=" col s12">
+              <label>¿Amenidad en relación?</label>
+              <select style="height: 180px;" class="browser-default" ng-model="editar.dias" multiple>
+                <option value="" disabled selected>Selecciona la amenidad</option>
+                <option ng-if="cond.$id !== editar.$id" ng-repeat="cond in data" value="{{cond.$id}}">{{cond.nombre}}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <br>
+            <br>
+            <small class="center-align">Horario normal</small>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class=" col s12">
+              <label>*Días disponibles</label>
+              <select style="height: 180px;" class="browser-default" ng-model="editar.dias" multiple>
+                <option value="" disabled selected>Selecciona los días disponibles en horario normal</option>
+                <option value="lunes">Lunes</option>
+                <option value="martes">Martes</option>
+                <option value="miercoles">Miércoles</option>
+                <option value="jueves">Jueves</option>
+                <option value="viernes">Viernes</option>
+                <option value="sabado">Sábado</option>
+                <option value="domingo">Domingo</option>
+              </select>
+            </div>
+            <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+              <input ng-model="editar.hora_minima" name="hora_minima" type="number" min="0" max="24" step="1" class="validate" required="">
+              <label for="hora_minima">*Hora mínima de uso (Formato de 24 horas)</label>
+            </div>
+            <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+              <input ng-model="editar.hora_maxima" name="hora_maxima" type="number" min="0" max="24" step="1" class="validate" required="">
+              <label for="hora_maxima">*Hora máxima de uso (Formato de 24 horas)</label>
+            </div>
+          </div>
+          <br>
+          <br>
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <br>
+            <br>
+            <small class="center-align">Horario especial (seleccione los días que afecta este horario con sus respectivas horas)</small>
+          </div>
+
+          <div class="row">
+            <div class="col s12 center-align">
+              <h5 class="center-align">¿La amenidad se administra por horarios especiales?</h5>
+            </div>
+            <div class="col s4 offset-s4">
+              <div class="switch">
+                <label>
+                  No
+                  <input ng-model="editar.especial" type="checkbox">
+                  <span class="lever"></span>
+                  Si
+                </label>
+              </div>
+            </div>
+          </div>
+          <div ng-if="editar.especial" class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class=" col s12">
+              <label>Días disponibles especiales</label>
+              <select style="height: 180px;" class="browser-default" ng-model="editar.dias_especiales" multiple>
+                <option value="" disabled selected>Selecciona los días disponibles especiales</option>
+                <option value="lunes">Lunes</option>
+                <option value="martes">Martes</option>
+                <option value="miercoles">Miércoles</option>
+                <option value="jueves">Jueves</option>
+                <option value="viernes">Viernes</option>
+                <option value="sabado">Sábado</option>
+                <option value="domingo">Domingo</option>
+              </select>
+            </div>
+            <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+              <input ng-model="editar.hora_minima_especial" name="hora_minima_especial" type="number" min="0" max="24" step="1" class="validate"
+                required="">
+              <label for="hora_minima_especial">Hora mínima especial (Formato de 24 horas)</label>
+            </div>
+            <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+              <input ng-model="editar.hora_maxima_especial" name="hora_maxima_especial" type="number" min="0" max="24" step="1" class="validate"
+                required="">
+              <label for="hora_maxima_especial">Hora máxima especial (Formato de 24 horas)</label>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:200px;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+        <button type="submit" class="waves-effect waves-green btn ">Guardar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Structure ELIMINAR -->
+  <div id="eliminarModal" class="modal white">
+    <div class="modal-content ">
+      <div class="topModal deep-orange darken-3">
+        <h4>Eliminar la Amenidad seleccionada</h4>
+        <i class="large material-icons">delete</i>
+      </div>
+      <h5 class="center-align">
+        <br>
+        <br> Haz clíc en Aceptar para confirmar que deseas eliminar la Amenidad
+        <br>
+        <br> </h5>
+    </div>
+    <div class="modal-footer white">
+      <a class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+      <a ng-click="eliminar()" class="waves-effect waves-green btn deep-orange darken-3">Aceptar</a>
+    </div>
+  </div>
+
+  <!-- INICIO DE MODAL PARA ARCHIVO -->
+  <div id="archivoModal" class="modal modal-fixed-footer">
+    <form name="archivoForm" ng-submit="subirFoto(false, 'foto')" class=" black-text">
+      <div class="modal-content white">
+        <div class="topModal green darken-2">
+          <h4>Cargar Imagen</h4>
+          <i class="large material-icons">photo</i>
+        </div>
+        <br>
+        <div class="row">
+          <h5 class="center-align">Selecciona una imagen</h5>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Fotografía</span>
+                <input required id="foto" name="foto" accept="image/x-png,image/gif,image/jpeg" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+            </div>
+          </div>
+          <br>
+          <br>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+        <button ng-disabled="archivoForm.foto.$invalid" type="submit" class="waves-effect waves-green btn ">Subir</button>
+      </div>
+    </form>
+  </div>
+  <!-- FINAL DE MODAL PARA ARCHIVO -->
+
+  <!-- INICIO DE MODAL PARA ALBUM -->
+  <div id="albumModal" class="modal modal-fixed-footer">
+    <div class="modal-content white">
+      <div class="topModal green darken-2">
+        <h4>Album para la Amenidad</h4>
+        <i class="large material-icons">photo</i>
+      </div>
+      <br>
+      <div class="row">
+        <div class="input-field col s10 offset-s1 m8 offset-m2">
+          <div class="file-field input-field ">
+            <div class="btn black">
+              <span class="">Fotografía</span>
+              <input required id="fotoAlbum" name="fotoAlbum" accept="image/x-png,image/gif,image/jpeg" type="file">
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text">
+            </div>
+          </div>
+        </div>
+        <div class="col s12 center-align">
+          <button class="btn waves-effect" ng-click="subirFoto(true, 'fotoAlbum')">Añadir foto</button>
+        </div>
+        <div class="col s12">
+          <table class="highlight centered ">
+            <thead>
+              <tr>
+                <th>Foto</th>
+                <th>Eliminar</th>
+              </tr>
+            </thead>
+
+            <tbody ng-if="noCargandoAlbum">
+              <tr ng-if="album.length" ng-repeat="(i, item) in album">
+                <td>
+                  <img imageonload src="img/placeholder.png" ng-src="{{item.imagen}}" alt="" srcset="" height="40px">
+                </td>
+                <td>
+                  <i ng-click="album.$remove(item)" class="red-text center-align material-icons center">delete</i>
+                </td>
+              </tr>
+              <tr ng-if="!album.length">
+                <td colspan="2">
+                  <h5 class="center-align">No hay fotos que mostrar</h5>
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!noCargandoAlbum">
+              <tr>
+                <td colspan="9">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cerrar</a>
+      <button ng-disabled="archivoForm.foto.$invalid" type="submit" class="waves-effect waves-green btn ">Subir</button>
+    </div>
+  </div>
+  <!-- FINAL DE MODAL PARA ALBUM -->
+
+  <!-- DIALOG MODAL NO DISPONIBLES -->
+  <div id="noDisponiblesModal" class="modal white">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12">
+          <br>
+          <br>
+          <h4 class="center-align">Disponibilidad para la amenidad</h4>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s4">
+          <select class="browser-default black-text" ng-model="mesSeleccionado" name="mesSeleccionado" required style="margin-top: 10px">
+            <option value="" disabled selected>Mes</option>
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+        </div>
+        <div class="col s4">
+          <select class="browser-default black-text" ng-model="anioSeleccionado" name="anioSeleccionado" required style="margin-top: 10px">
+            <option value="" disabled selected>Año</option>
+            <option ng-repeat="(key, anio) in anios" value="{{anio}}">{{anio}}</option>
+          </select>
+        </div>
+        <div class="col s4">
+          <button ng-disabled="!mesSeleccionado || !anioSeleccionado" ng-click="cargarFechas()" class="waves-effect waves-light btn">
+            Cargar
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s6">
+          <select class="browser-default black-text" ng-model="diaSeleccionado" name="diaSeleccionado" required style="margin-top: 10px">
+            <option value="" disabled selected>Selecciona el día</option>
+            <option ng-repeat="item in diasA track by $index" value="{{item}}">{{item}}</option>
+          </select>
+        </div>
+        <div class="col s6 center-align">
+          <button ng-click="modificarLaDisponibilidad()" class="btn waves-effect">Modificar la disponibilidad</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <table class="highlight centered ">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Disponible</th>
+              </tr>
+            </thead>
+
+            <tbody ng-if="noCargandoFechas">
+              <tr ng-repeat="(i, item) in fechas track by $index" ng-if="fechas.length">
+                <td>{{item.$id}}</td>
+                <td>{{item.estado == true ? 'sin disponibilidad' : 'disponible'}}</td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!fechas.length">
+              <tr>
+                <td colspan="2">
+                  Aún no se han asignado o llenado fechas en este mes
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!noCargandoFechas">
+              <tr>
+                <td colspan="2">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+    </div>
+  </div>
+  <!-- FINAL DE NO DISPONIBLES -->
+
+  <!-- DIALOG MODAL HORARIOS -->
+  <div id="horariosModal" class="modal white">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12">
+          <br>
+          <br>
+          <h4 class="center-align">Horarios para la amenidad</h4>
+        </div>
+      </div>
+      <form ng-submit="agregarHorario()" class="row">
+        <div class="col s6">
+          <div class="col s12">
+            <label>Días disponibles especiales</label>
+            <select style="height: 180px;" class="browser-default" ng-model="horario.dia" multiple>
+              <option value="" disabled selected>Selecciona los días disponibles especiales</option>
+              <option value="lunes">Lunes</option>
+              <option value="martes">Martes</option>
+              <option value="miercoles">Miércoles</option>
+              <option value="jueves">Jueves</option>
+              <option value="viernes">Viernes</option>
+              <option value="sabado">Sábado</option>
+              <option value="domingo">Domingo</option>
+            </select>
+          </div>
+        </div>
+        <div class="col s6">
+          <form id="agregarHorarioForm">
+            <div class="col s12 input-field">
+              <input placeholder="8" name="hora_minima" ng-model="horario.minima" step="1" min="0" max="24" type="number" class="validate">
+              <label for="first_name">Hora mínima (número entero)</label>
+            </div>
+            <div class="col s12 input-field">
+              <input placeholder="8" name="hora_maxima" ng-model="horario.maxima" step="1" min="0" max="24" type="number" class="validate">
+              <label for="first_name">Hora máxima (número entero)</label>
+            </div>
+            <div class="col s12">
+              <button type="submit" ng-disabled="!horario.dia || !horario.minima || !horario.maxima" class="btn waves-effect">Agregar</button>
+            </div>
+          </form>
+        </div>
+
+      </form>
+      <div class="row">
+        <div class="col s12">
+          <table class="highlight centered bordered">
+            <thead>
+              <tr>
+                <th>Día(s)</th>
+                <th>Horario</th>
+                <th>Eliminar</th>
+              </tr>
+            </thead>
+
+            <tbody ng-if="noCargandoHorarios">
+              <tr ng-repeat="(i, item) in horarios track by $index" ng-if="horarios.length">
+                <td>
+                  <p ng-repeat="dia in item.dias" ng-bind="dia"></p>
+                </td>
+                <td>{{item.minima}} a {{item.maxima}}</td>
+                <td>
+                  <i ng-click="eliminarHorario(i)" class="red-text center-align material-icons center">delete</i>
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!horarios.length">
+              <tr>
+                <td colspan="3">
+                  Aún no se han horarios
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!noCargandoHorarios">
+              <tr>
+                <td colspan="3">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+    </div>
+  </div>
+  <!-- FINAL DE MODAL HORARIOS -->
+
+  <!-- DIALOG MODAL -->
+  <div id="dialogModal" class="modal white">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12">
+          <h4 id="tituloDialogModal"></h4>
+          <p id="textoDialogModal"></p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+    </div>
+  </div>
+
+  <a ng-if="condominioSeleccionado" data-position="top" href="#crearModal" data-delay="50" data-tooltip="Añadir usuario" class=" btn-floating btn-large waves-effect tooltipped waves-light modal-trigger">
+    <i class="material-icons">add</i>
+  </a>
+
+  <footer class="white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">Grupo Alzar</h5>
+          <ul id='credits'>
+            <li>
+              Proyecto de Grupo Alzar
+            </li>
+            <li>
+              Desarrollado para uso de Grupo Alzar y sus clientes filiales.
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Enero de 2017]</span>
+      </div>
+    </div>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+    authDomain: "alzargt.firebaseapp.com",
+    databaseURL: "https://alzargt.firebaseio.com",
+    projectId: "alzargt",
+    storageBucket: "alzargt.appspot.com",
+    messagingSenderId: "105762378399"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="js/addWait.js"></script>
+<script src="js/amenidades.js"></script>
+<script src="js/usuarios.js"></script>
+<!-- EXCEL -->
+<script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/cpexcel.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/jszip.js"></script>
+
+</html>

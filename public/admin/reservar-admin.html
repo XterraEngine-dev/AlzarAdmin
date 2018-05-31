@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html ng-app="app" ng-controller="ctrl">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Reserva | Grupo Alzar</title>
+  <!-- Compiled and minified CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Cambios personales -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pikaday.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body>
+
+  <header>
+    <div class="navbar-fixed">
+      <nav class="white black-text">
+        <div class="nav-wrapper black-text">
+          <a href="index.html" class="brand-logo center black-text">
+            <img src="img/logo.png" ng-src="{{condominio_data.logo}}" height="50px" width="auto" alt="{{condominio_data.nombre}}"> </a>
+
+          <ul id="nav-mobile" class="left ">
+            <li>
+              <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                <i class="material-icons black-text">menu</i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+  </header>
+  <main class="grey lighten-4">
+    <div class="row">
+      <div class="col s12 ">
+        <ul ng-if="!formularioRegistrado" class="collapsible" data-collapsible="accordion">
+          <li>
+            <div class="collapsible-header">
+              <i class="material-icons">today</i>Selecciona una fecha</div>
+            <div class="collapsible-body white">
+              <div class="row">
+                <form class="col s12">
+                  <div class="row">
+                    <div class="input-field col s12">
+                      <input type="text" id="fecha_seleccionada" class="datepicker">
+                      <label for="first_name">Selecciona una fecha deseada</label>
+                      <small>
+                        Haz clic sobre la línea para desplegar el calendario y luego selecciona la fecha que desees. Si se encuentra con fondo gris
+                        claro, es porque ya no está disponible.
+                      </small>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="collapsible-header">
+              <i class="material-icons">schedule</i>Selecciona las horas deseadas
+            </div>
+            <div class="collapsible-body" style="max-height: 400px;
+            overflow: scroll;">
+              <form ng-if="resolverHorario" class="row white z-depth-2">
+                <div ng-if="data.especial" class="col s12">
+                  <div class="input-field col s6">
+                    <input disabled ng-model="data.horas_maximas" type="number" class="validate">
+                    <label class="active">Horas máximas para alquilar</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input step="1" disabled ng-model="data.horas_uso" min="{{data.horas_uso}}" type="number" class="validate">
+                    <label class="active">Horas mínimas para alquilar</label>
+                  </div>
+                  <table class="highlight col s12 centered">
+                    <thead>
+                      <tr>
+                        <th>Horario</th>
+                        <th>Disponibiliad</th>
+                        <th>Apartar</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr ng-repeat="(i, hora) in arrayHorario ">
+                        <td>{{hora.hora}}:00 a {{hora.hora + 1}}:00</td>
+
+                        <td>{{!hora.lleno ? "Si" : "No"}}</td>
+                        <td>
+                          <p class="center-align">
+                            <input class="apartar" type="checkbox" ng-disabled="{{hora.lleno}}" id="c{{i}}" ng-model="confirmados" ng-change="seleccionarHora(hora, i)"
+                            />
+                            <label for="c{{i}}"></label>
+                          </p>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody ng-if="!arrayHorario.length">
+                      <tr>
+                        <td class="center-align" colspan="3">No hay horario disponible este día</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- PARA HORARIOS FIJOS -->
+                <div ng-if="!data.especial" class="col s12">
+
+                  <table class="col s12 highlight centered">
+                    <thead>
+                      <tr>
+                        <th>Horario</th>
+                        <th>Disponibiliad</th>
+                        <th>Apartar</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="(i, fijo) in arrarFijos">
+                        <td>{{fijo.horario}}</td>
+                        <td>{{!fijo.lleno ? "Si" : "No"}}</td>
+                        <td>
+                          <p class="center-align">
+                            <input class="apartar" type="checkbox" name="reserva" ng-disabled="{{fijo.lleno}}" id="c{{i}}" ng-model="confirmados" ng-change="seleccionarFijo(fijo, i)"
+                            />
+                            <label for="c{{i}}"></label>
+                          </p>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody ng-if="!arrarFijosLength">
+                      <tr>
+                        <td class="center-align" colspan="3">No hay horario disponible este día</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </form>
+              <div ng-if="!resolverHorario && fecha_seleccionada" class="center">
+                <div class="preloader-wrapper big active">
+                  <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                      <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                      <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                      <div class="circle"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="center" ng-if="!fecha_seleccionada">
+                <br>
+                <br>
+                <h5 class="center-align">No has seleccionado una fecha, primero selecciona una y luego un horario.</h5>
+                <br>
+                <br>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="collapsible-header">
+              <i class="material-icons">check_circle</i>Confirma el precio</div>
+            <div ng-if="!errorValidacion" class="collapsible-body">
+              <div ng-if="(arrarFijos || arrayHorario) && fecha_seleccionada" class="row white  z-depth-2">
+                <div class="col s12">
+                  <h5 class="center-align">Por favor, confirma que estás de acuerdo</h5>
+                </div>
+                <div ng-if="costos" class="col s12">
+                  <table class="highlight centered">
+                    <thead>
+                      <th>{{data.espcial ? "Horario" : "Hora"}}</th>
+                      <th>Costo</th>
+                    </thead>
+                    <tbody ng-if="costos.length">
+                      <tr ng-repeat="costo in costos">
+                        <td>
+                          {{costo.horario}}
+                        </td>
+                        <td>
+                          {{costo.costo}}
+                        </td>
+                      </tr>
+                      <tr class="right-align" ng-if="total">
+                        <td class="right-align" colspan="2">
+                          <h5>Total por uso: {{total | currency:'Q '}}</h5>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody ng-if="!costos">
+                      <tr>
+                        <td colspan="2">
+                          <h5>No has seleccionado ni un horario</h5>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div ng-if="costos.length">
+                  <div class="col s12">
+                    <div class="switch center-align">
+                      <label>
+                        No
+                        <input ng-model="confirmacion_precio" ng-change="alertaConfirmacionPrecio(this)" type="checkbox">
+                        <span class="lever"></span>
+                        Confirmo el precio
+                      </label>
+                      <br>
+                      <br>
+                      <br>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div ng-if="costos.length && data.deposito" class="row white z-depth-2">
+                <div class="col s12">
+                  <br>
+                  <h5 class="center-align">Garantía por Uso de la Amenidad</h5>
+                  <p class="center-align">
+                    Valor del depósito por garantía: {{data.deposito | currency:'Q '}}
+                    <br>
+                    <small>
+                      <b>El depósito se realiza mediante cheque</b>, este no será cobrado, ya que es una garantía.
+                    </small>
+                  </p>
+                  <p class="center align">
+                    <br> ¿Confirma que ha entendido que existe un depósito por garantía? Mismo que deberás entregar en Administración,
+                    junto al formulari aprobado.
+                  </p>
+                  <div class="switch center-align">
+                    <label>
+                      No
+                      <input ng-model="confirmacion_deposito" ng-change="alertaConfirmacionDeposito(this)" type="checkbox">
+                      <span class="lever"></span>
+                      Si
+                    </label>
+                    <br>
+                  </div>
+                  <br>
+                  <br>
+                </div>
+              </div>
+              <div ng-if="!arrayHorario && !arrarFijos">
+                <br>
+                <br>
+                <h5 class="center-align">No has seleccionado una fecha, primero selecciona una y luego un horario.</h5>
+                <br>
+                <br>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="collapsible-header">
+              <i class="material-icons">info</i>Completa la información</div>
+            <div ng-if="!errorValidacion" class="collapsible-body">
+              <div ng-if="fecha_seleccionada && confirmacion_precio && (confirmacion_deposito || !data.deposito)" class="row white  z-depth-2">
+                <div class="col s12">
+                  <h5 class="center-align">Por favor, completa la información siguiente:</h5>
+                </div>
+                <form ng-submit="registrarFormulario()" name="informacionForm" class="col s12">
+                  <div class="row">
+                    <div class="input-field col s12">
+                      <input id="numero_invitados" ng-model="formulario.numero_invitados" name="numero_invitados" type="number" step="1" min="1"
+                        ng-min="1" ng-max="data.capacidad" placeholder="{{data.capacidad}}" class="validate" required>
+                      <label class="active" for="numero_invitados">Número de invitados (Máximo: {{data.capacidad}})</label>
+                    </div>
+                    <div class="input-field col s12">
+                      <input id="descripcion" ng-model="formulario.descripcion" name="descripcion" required minlength="1" type="text" class="validate"
+                        ng-model-options="{ debounce: 300 }">
+                      <label class="active" for="descripcion">Breve descripción:</label>
+                    </div>
+                    <div class="input-field col s12">
+                      <input id="observaciones" ng-model="formulario.observaciones" name="observaciones" type="text" class="validate" ng-model-options="{ debounce: 300 }">
+                      <label class="active" for="observaciones">Observaciones:</label>
+                    </div>
+                    <div class="col s12">
+                      <button ng-disabled="informacionForm.numero_invitados.$invalid && informacionForm.descripcion.$invalid" type="submit" class="btn waves-effect">
+                        Registrar solicitud
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div ng-if="!fecha_seleccionada || !confirmacion_precio || (!confirmacion_deposito && data.deposito)">
+                <br>
+                <br>
+                <h5 class="center-align">Completa primero los pasos anteriores.</h5>
+                <br>
+                <br>
+              </div>
+            </div>
+
+          </li>
+        </ul>
+        <div ng-if="formularioRegistrado" class="col s12">
+          <h2 class="header">Reserva realizada</h2>
+          <div class="card horizontal">
+            <div class="card-image">
+              <img ng-src="{{data.foto.imagen}}">
+            </div>
+            <div class="card-stacked">
+              <div class="card-content">
+                <p style="text-align:justify;">
+                  Haz realizado una reserva ahora, deberás realizar el pago correspondiente a la cuenta de Administración, recuerda, debes
+                  preservar tu formulario impreso.
+                  <br>
+                  <br>
+                  <b>¿Cuál es el siguiente paso?</b>
+                  <br> Una vez realices el pago, regresa a este administrador e ingresa a "Mis reservas", ingresa a la reserva
+                  correspondiente e ingresa el número de boleta correspondiente a tu pago, así como una fotografía de respaldo.
+                  Posteriormente, un Administrador revisará tu reserva y si todo es correcto aprobará tu reserva. Recuerda
+                  el día del evento llevar tu formulario impreso.
+                  <br>
+                  <br>
+                </p>
+              </div>
+              <div class="card-action">
+                <a href="index.html">Volver al administrador</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- MODAL ALERTA -->
+    <div id="modal_alerta" class="modal modal-fixed-footer white" style="height: 25%;">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col s12">
+            <br>
+            <h4 class="center-align" ng-bind="titulo_alerta"></h4>
+            <div class="center-align" ng-bind="descripcion_alerta">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a ng-click="confirmarAlerta(true)" class="modal-action modal-close waves-effect waves-green btn-flat ">Aceptar</a>
+      </div>
+    </div>
+  </main>
+
+  <ul id="slide-menu" class="side-nav">
+
+  </ul>
+
+  <footer class="   white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">{{condominio_data.nombre}} | Administrado por Grupo Alzar</h5>
+
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Enero de 2017]</span>
+      </div>
+    </div>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-sanitize.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+    authDomain: "alzargt.firebaseapp.com",
+    databaseURL: "https://alzargt.firebaseio.com",
+    projectId: "alzargt",
+    storageBucket: "alzargt.appspot.com",
+    messagingSenderId: "105762378399"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="https://rawgit.com/buberdds/angular-bootstrap-colorpicker/master/js/bootstrap-colorpicker-module.min.js"></script>
+
+<script src="../js/color.min.js"></script>
+<script src="../js/addWait.js"></script>
+<script src="js/reservar-admin.js"></script>
+<script src="../js/usuarios.js"></script>
+
+
+
+
+</html>

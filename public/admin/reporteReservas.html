@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Grupo Alzar</title>
+  <!-- Compiled and minified CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Cambios personales -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pikaday.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body ng-controller="ctrl">
+
+  <header>
+    <div class="navbar-fixed">
+      <nav class="white black-text">
+        <div class="nav-wrapper black-text">
+          <a href="index.html" class="brand-logo center black-text">
+            <img src="img/logo.png" height="50px" width="auto"> </a>
+
+          <ul id="nav-mobile" class="left ">
+            <li>
+              <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                <i class="material-icons black-text">menu</i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+  </header>
+  <main class="grey lighten-4">
+    <div class="row" id="agenciasListado">
+      <div class="col s12 ">
+        <br>
+        <br>
+        <nav>
+          <div class="nav-wrapper">
+            <div class="row">
+              <div ng-if="userTipo == 'coordinador'" class="col m4 s12">
+                <select class="browser-default black-text" ng-model="condominioSeleccionado" name="condominioSeleccionado" required style="margin-top: 10px"
+                  ng-change="cargarCondominio(condominioSeleccionado)">
+                  <option value="" disabled selected>Selecciona un condominio</option>
+                  <option ng-repeat="(key, condominio) in condominios" value="{{condominio.$id}}">{{condominio.nombre}}</option>
+                </select>
+              </div>
+              <div class="col m4 s12">
+                <select class="browser-default black-text" ng-model="amenidadSeleccionada" name="amenidadSeleccionada" required style="margin-top: 10px">
+                  <option value="" disabled selected>Selecciona una amenidad</option>
+                  <option ng-repeat="(key, a) in amenidades" value="{{a.$id}}">{{a.nombre}}</option>
+                </select>
+              </div>
+
+              <div class="col s2">
+                <button ng-click="cargarCondominio()" class="waves-effect waves-light btn">
+                  Cargar
+                </button>
+              </div>
+            </div>
+          </div>
+        </nav>
+        <br>
+        <br>
+        <nav>
+          <div class="nav-wrapper">
+            <form>
+              <div class="input-field">
+                <input ng-model="search" id="search" type="search" required>
+                <label class="label-icon" for="search">
+                  <i class="material-icons">search</i>
+                </label>
+                <i ng-click="borrarSearch()" class="material-icons">close</i>
+              </div>
+            </form>
+          </div>
+        </nav>
+        <br>
+        <br>
+        <div class="tableContainer white">
+          <table class="highlight centered table ">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Fecha del evento</th>
+                <th>Invitados</th>
+                <th>Costo</th>
+                <th>Nombre Organizador</th>
+                <th>Estado de la reserva</th>
+                <th>Aprobar reserva</th>
+                <th>LIBERAR</th>
+                <th>Ver detalles</th>
+              </tr>
+            </thead>
+            <tbody ng-if="noCargando">
+              <tr ng-if="res.length" ng-repeat="(i, item) in res = ( data | filter:search )">
+                <td ng-bind="item.fecha | date:'dd/MM/yyyy'"></td>
+                <td ng-bind="item.fecha_seleccionada | date:'dd/MM/yyyy'"></td>
+                <td ng-bind="item.numero_invitados"></td>
+                <td ng-bind="item.total | currency:'Q '"></td>
+                <td ng-bind="item.nombre_condomino"></td>
+                <td ng-bind="item.estado"></td>
+                <td>
+                  <i ng-if="item.estado == 'aprobacion'" ng-click="verAprobar(item)" class="green-text center-align material-icons center">check_circle</i>
+                </td>
+                <td>
+                  <i ng-if="item.estado != 'aprobado'" ng-click="liberar(item)" class="green-text center-align material-icons center">send</i>
+                </td>
+                <td>
+                  <a target="_blank" href="https://app.alzar.com.gt/formulario.html?cid={{condominioSeleccionado}}&aid={{amenidadSeleccionada}}&id={{item.$id}}">Ver</a>
+                </td>
+              </tr>
+              <tr ng-if="!res.length">
+                <td colspan="8">
+                  <h5 class="center-align">No hay Reservas que mostrar</h5>
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!noCargando">
+              <tr>
+                <td colspan="8">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <ul id="slide-menu" class="side-nav">
+
+  </ul>
+  <div id="modalHistorial" class="modal white">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12">
+          <br>
+          <h4 class="center-align">Aprobar reserva</h4>
+          <p>A continuación se muestran los datos del pago de la reserva, corrobora que sean adecuados y aprueba</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <p>
+            Número de boleta: {{editar.numero_boleta}}
+            <br> Nombre del banco: {{editar.banco_boleta}}
+            <br>
+            <img width="200px" src="{{editar.imagen}}">
+          </p>
+        </div>
+        <button ng-click="aprobar(true)" class="btn waves-effect">Aprobar</button>
+        <button ng-click="aprobar(false)" class="btn waves-effect">No apruebo</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+    </div>
+  </div>
+  <a ng-if="condominioSeleccionado" ng-click="exportarUsuarios()" data-position="top" data-delay="50" data-tooltip="Exportar lecturas"
+    class="green darken-2 btn-floating btn-large waves-effect tooltipped waves-light">
+    <i class="material-icons">explicit</i>
+  </a>
+
+  <footer class="white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">Grupo Alzar</h5>
+          <ul id='credits'>
+            <li>
+              Proyecto de Grupo Alzar
+            </li>
+            <li>
+              Desarrollado para uso de Grupo Alzar y sus clientes filiales.
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Enero de 2017]</span>
+      </div>
+    </div>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+    authDomain: "alzargt.firebaseapp.com",
+    databaseURL: "https://alzargt.firebaseio.com",
+    projectId: "alzargt",
+    storageBucket: "alzargt.appspot.com",
+    messagingSenderId: "105762378399"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="js/addWait.js"></script>
+<script src="js/reporteReservas.js"></script>
+<script src="js/usuarios.js"></script>
+<!-- EXCEL -->
+<script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/cpexcel.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/jszip.js"></script>
+
+</html>

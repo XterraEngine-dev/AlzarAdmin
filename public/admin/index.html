@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Grupo Alzar</title>
+  <!-- Compiled and minified CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Cambios personales -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pikaday.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-bootstrap-colorpicker/3.0.32/css/colorpicker.min.css">
+
+  <link rel="manifest" href="/manifest.json" />
+  <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+  <script>
+    var OneSignal = window.OneSignal || [];
+    OneSignal.push(function () {
+      OneSignal.init({
+        appId: "533a19a2-edee-469d-8c6b-664aaadc532d",
+      });
+    });
+  </script>
+</head>
+
+<body ng-controller="ctrl">
+
+  <header>
+    <div class="navbar-fixed">
+      <nav class="white black-text">
+        <div class="nav-wrapper black-text">
+          <a href="index.html" class="brand-logo center black-text">
+            <img src="img/logo.png" height="50px" width="auto"> </a>
+          <ul id="nav-mobile" class="right black-text">
+            <li>
+              <a class="tooltipped" id="notifications-button" data-position="left" data-delay="50" data-tooltip="Ver notificaciones" data-activates="notifications-slide">
+                <i class="material-icons black-text">notifications</i>
+              </a>
+            </li>
+          </ul>
+          <ul id="nav-mobile" class="left ">
+            <li>
+              <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                <i class="material-icons black-text">menu</i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+  </header>
+  <main class="grey lighten-4">
+    <div class="row" id="agenciasListado">
+      <div class="col s12 ">
+        <br>
+        <br>
+        <nav>
+          <div class="nav-wrapper">
+            <form>
+              <div class="input-field">
+                <input ng-model-options="{debounce: 1000}" ng-model="search" id="search" type="search" required>
+                <label class="label-icon" for="search">
+                  <i class="material-icons">search</i>
+                </label>
+                <i ng-click="borrarSearch()" class="material-icons">close</i>
+              </div>
+            </form>
+          </div>
+        </nav>
+        <div class="tableContainer white">
+          <table class="highlight centered ">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Logo</th>
+                <th>Fondo</th>
+                <th>Color</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+              </tr>
+            </thead>
+
+            <tbody id="tablaUsuarios" ng-if="noCargando">
+              <tr ng-if="res.length" ng-repeat="(i, condominio) in res = ( data | filter:search)">
+                <td ng-bind="condominio.codigo"></td>
+                <td ng-bind="condominio.nombre"></td>
+                <td>
+                  <img imageonload src="img/placeholder.png" ng-src="{{condominio.logo}}" alt="" srcset="" height="40px">
+                </td>
+                <td>
+                  <img imageonload src="img/placeholder.png" ng-src="{{condominio.fondo}}" alt="" srcset="" height="40px">
+                </td>
+                <td ng-bind="condominio.color" class="white-text" style="background-color: {{condominio.color}}"></td>
+                <td>
+                  <i ng-click="editarModal(condominio)" class="blue-text center-align material-icons center">edit</i>
+                </td>
+                <td>
+                  <i ng-click="eliminarModal(condominio)" class="red-text center-align material-icons center">delete</i>
+                </td>
+              </tr>
+              <tr ng-if="!res.length">
+                <td colspan="6">
+                  <h5 class="center-align">No hay condominios que mostrar</h5>
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!noCargando">
+              <tr>
+                <td colspan="6">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <ul id="slide-menu" class="side-nav">
+
+  </ul>
+
+  <!-- Modal Structure -->
+  <div id="crearModal" class="modal modal-fixed-footer">
+    <form id="crearForm" name="crearForm" class=" black-text" ng-submit="crear(crearForm.$valid)">
+      <div class="modal-content white">
+        <div class="topModal ">
+          <h4>Crear un condominio</h4>
+          <i class="large material-icons">create</i>
+        </div>
+        <br>
+        <div class="row">
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.nombre" id="nombre" name="nombre" type="text" class="validate" required="">
+            <label for="nombre">Nombre para el condominio</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input id="codigo" name="codigo" type="text" ng-model="new.codigo" class="validate" required="">
+            <label for="codigo">Código en el sistema</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 white-text" style="background-color:{{new.color}}">
+
+            <input colorpicker="hex" id="color" name="color" type="text" ng-model="new.color" class="validate">
+            <label for="color">Color del condominio</label>
+          </div>
+
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros de mantenimiento el siguiente mes?
+              <label>
+                No
+                <input ng-model="new.mantenimiento_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros extraordinarios el siguiente mes?
+              <label>
+                No
+                <input ng-model="new.extraordinario_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros por inventario el siguiente mes?
+              <label>
+                No
+                <input ng-model="new.inventario_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros por mora el siguiente mes?
+              <label>
+                No
+                <input ng-model="new.mora_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros por exceso el siguiente mes?
+              <label>
+                No
+                <input ng-model="new.exceso_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros por amenidad el siguiente mes?
+              <label>
+                No
+                <input ng-model="new.amenidad_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite alquilar amenidades por Inquilinos?
+              <label>
+                No
+                <input ng-model="new.inquilinos" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input name="maximo_disponible" type="number" ng-model="editar.maximo_disponible" class="validate">
+            <label for="color">Meses máximos para alquilar</label>
+            <small>Ejemplo: 6, si se permite alquilar una amenidad en hasta 6 meses de la fecha actual.</small>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Logo del condominio</span>
+                <input accept="image/*" id="logo" name="logo" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+              <div class="col s12 center-align">
+                <img width="80px" style="object-fit: cover;" src="img/placeholder.png" ng-src="{{new.logo}}" id="imgPreview">
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3 blue-text text-darken-3">
+            <div class="progress">
+              <div id="progresoFile" class="determinate" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Fondo del condominio</span>
+                <input accept="image/*" id="logoFi" name="logo" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+              <div class="col s12 center-align">
+                <img width="80px" style="object-fit: cover;" src="img/placeholder.png" ng-src="{{new.fondo}}" id="imgPreviewFi">
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3 blue-text text-darken-3">
+            <div class="progress">
+              <div id="progresoFileFi" class="determinate" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="col s10 offset-s1" style="height: 120px;">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+        <button type="submit" id="sendDiv" class="waves-effect waves-green     btn ">Aceptar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Structure -->
+  <div id="editarModal" class="modal modal-fixed-footer">
+    <form id="editarForm" name="editarForm" class=" black-text" ng-submit="guardar(editarForm.$valid)">
+      <div class="modal-content white">
+        <div class="topModal ">
+          <h4>Editar un condominio</h4>
+          <i class="large material-icons">edit</i>
+        </div>
+        <br>
+        <div class="row">
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.nombre" name="nombre" type="text" class="validate" required="">
+            <label for="nombre">Nombre para el condominio</label>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input name="codigo" type="text" ng-model="editar.codigo" class="validate" required="">
+            <label for="codigo">Código en el sistema</label>
+          </div>
+
+
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 white-text" style="background-color: {{editar.color}}">
+            <input colorpicker="hex" name="color" type="text" ng-model="editar.color" class="validate">
+            <label for="color">Color del condominio</label>
+          </div>
+
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros de mantenimiento el siguiente mes?
+              <label>
+                No
+                <input ng-model="editar.mantenimiento_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros extraordinarios el siguiente mes?
+              <label>
+                No
+                <input ng-model="editar.extraordinario_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros por inventario el siguiente mes?
+              <label>
+                No
+                <input ng-model="editar.inventario_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros por mora el siguiente mes?
+              <label>
+                No
+                <input ng-model="editar.mora_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros por exceso el siguiente mes?
+              <label>
+                No
+                <input ng-model="editar.exceso_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite realizar cobros por amenidad el siguiente mes?
+              <label>
+                No
+                <input ng-model="editar.amenidad_mes_siguiente" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+
+
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <div class="switch">
+              ¿Este condominio permite alquilar amenidades por Inquilinos?
+              <label>
+                No
+                <input ng-model="editar.inquilinos" type="checkbox">
+                <span class="lever"></span>
+                Si
+              </label>
+              <br>
+              <br>
+            </div>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input name="maximo_disponible" type="number" ng-model="editar.maximo_disponible" class="validate">
+            <label for="color">Meses máximos para alquilar</label>
+            <small>Ejemplo: 6, si se permite alquilar una amenidad en hasta 6 meses de la fecha actual.</small>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Logo del condominio</span>
+                <input accept="image/*" id="logoE" name="logo" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+              <div class="col s12 center-align">
+                <img width="80px" style="object-fit: cover;" src="img/placeholder.png" ng-src="{{editar.logo}}" id="imgPreviewE">
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3 blue-text text-darken-3">
+            <div class="progress">
+              <div id="progresoFileE" class="determinate" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="col s12 center-align">
+            <button ng-click="cambiarLogo()" id="sendDiv" class="waves-effect waves-green btn ">Cambiar logo</button>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Fondo del condominio</span>
+                <input accept="image/*" id="logoF" name="logo" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+              <div class="col s12 center-align">
+                <img width="80px" style="object-fit: cover;" src="img/placeholder.png" ng-src="{{editar.fondo}}" id="imgPreviewF">
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3 blue-text text-darken-3">
+            <div class="progress">
+              <div id="progresoFileF" class="determinate" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="col s12 center-align">
+            <button ng-click="cambiarFondo()" id="sendDiv" class="waves-effect waves-green btn ">Cambiar Fondo</button>
+          </div>
+
+          <div class="col s10 offset-s1" style="height: 120px;">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+        <button type="submit" id="sendDiv" class="waves-effect waves-green     btn ">Guardar</button>
+      </div>
+    </form>
+  </div>
+
+
+
+  <!-- Modal Structure ELIMINAR -->
+  <div id="eliminarModal" class="modal white">
+    <div class="modal-content ">
+      <div class="topModal deep-orange darken-3">
+        <h4>Eliminar el Condominio seleccionado</h4>
+        <i class="large material-icons">delete</i>
+      </div>
+      <h5 class="center-align">
+        <br>
+        <br> Haz clíc en Aceptar para confirmar que deseas eliminar el Condominio
+        <br>
+        <br> </h5>
+    </div>
+    <div class="modal-footer white">
+      <a class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+      <a ng-click="eliminar()" class="waves-effect waves-green btn deep-orange darken-3">Aceptar</a>
+    </div>
+  </div>
+
+
+  <a id="anadirEncuesta" data-position="top" href="#crearModal" data-delay="50" data-tooltip="Añadir encuesta" class=" btn-floating btn-large waves-effect tooltipped waves-light modal-trigger">
+    <i class="material-icons">add</i>
+  </a>
+  <footer class="   white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">Grupo Alzar</h5>
+          <ul id='credits'>
+            <li>
+              Proyecto de Grupo Alzar
+            </li>
+            <li>
+              Desarrollado para uso de Grupo Alzar y sus clientes filiales.
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Enero de 2017]</span>
+      </div>
+    </div>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+    authDomain: "alzargt.firebaseapp.com",
+    databaseURL: "https://alzargt.firebaseio.com",
+    projectId: "alzargt",
+    storageBucket: "alzargt.appspot.com",
+    messagingSenderId: "105762378399"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="https://rawgit.com/buberdds/angular-bootstrap-colorpicker/master/js/bootstrap-colorpicker-module.min.js"></script>
+
+<script src="js/color.min.js"></script>
+<script src="js/addWait.js"></script>
+<script src="js/index.js"></script>
+<script src="js/usuarios.js"></script>
+
+</html>

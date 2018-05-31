@@ -1,0 +1,18 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    "condominios": {
+      ".read": true,
+      ".write": "auth.uid === 'iaGsv2McP9fiS0lxqT7rGyo9F4M2' || auth.token.coordinador === true || auth.token.administrador === true"
+    },
+    "usuarios": {
+      ".read": "auth.uid === 'iaGsv2McP9fiS0lxqT7rGyo9F4M2' || auth.token.coordinador === true",
+      ".write": "auth.uid === 'iaGsv2McP9fiS0lxqT7rGyo9F4M2' || auth.token.coordinador === true",
+      "$uid": {
+        ".read": "$uid === auth.uid || auth.uid === 'iaGsv2McP9fiS0lxqT7rGyo9F4M2' || auth.token.coordinador === true",
+        ".write": "$uid === auth.uid || auth.uid === 'iaGsv2McP9fiS0lxqT7rGyo9F4M2' || auth.token.coordinador === true"
+      }
+    },
+  }
+}

@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html ng-app="encuesta">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Somos más</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Cambios personales -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pikaday.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+  <link rel="stylesheet" href="css/materialize-stepper.min.css">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+</head>
+
+<body ng-controller="editCtrl">
+  <style>
+    .error {
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+
+    .select-wrapper input.select-dropdown {
+      border: none;
+
+    }
+
+    .especialM {
+      float: left;
+      position: relative;
+      left: 50%;
+    }
+
+    .especial {
+      float: left;
+      position: relative;
+      left: -50%;
+    }
+
+    .material-icons {
+      cursor: pointer;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .modal-files {
+      position: absolute !important;
+      bottom: 5% !important;
+      left: 5% !important;
+      min-width: 300px !important;
+      height: 480px;
+      right: auto;
+      top: auto !important;
+    }
+
+    .fileModalUp {
+      position: relative;
+      top: 0;
+      height: 75px !important;
+      background-color: #f5f5f5;
+    }
+
+    .fileButton {
+      position: relative;
+      top: 2%;
+      right: 2%;
+    }
+
+    .my-handle {
+      cursor: move;
+      cursor: -webkit-grabbing;
+    }
+
+    .superNumber {
+      cursor: move;
+      cursor: -webkit-grabbing;
+      font-size: 24px;
+      padding-left: 15px;
+      padding-right: 15px;
+      margin-right: 20px;
+      margin-top: -5px;
+      font-weight: 600;
+      border-radius: 40px;
+      background-color: #0091ea;
+      color: white;
+      text-align: center;
+    }
+
+    .nombreItem {
+      width: calc(100% - 82px);
+      padding: 0 20px 0 20px;
+      margin: 0;
+      margin-right: 20px;
+      margin-top: -15px;
+      height: 28px;
+    }
+
+    .nombreItem input {
+      margin: 0;
+      padding: 0 !important;
+      height: 28px;
+    }
+
+    .nombreLabelItem {
+      padding-top: 1px;
+    }
+
+    div.botonesList {
+      position: absolute;
+      display: inline;
+      right: 0px;
+    }
+
+    .previewItemImage {
+      max-height: 56px;
+      margin-bottom: 10px;
+    }
+
+    .bigNumeroRespuesta {
+      font-size: 22px;
+      font-weight: 600;
+      color: white;
+      border-radius: 40px;
+      width: 3% !important;
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+      margin-right: 10px !important;
+      margin-top: 60px !important;
+      margin-left: 10px !important;
+      background-color: #29b6f6;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    dl {
+      counter-reset: contador;
+      list-style: none;
+    }
+
+    dl dd {
+      padding-left: 10px;
+      margin-top: -110px;
+    }
+
+    dl dt {
+      position: relative;
+      left: 0;
+      top: 0;
+      font-size: 50px;
+      font-weight: 600;
+      margin: 0px;
+      margin-top: 50px;
+      padding: 0px !important;
+      color: #666;
+    }
+
+    dl dt::before {
+      counter-increment: contador;
+      content: counter(contador);
+      left: 0;
+      top: 0;
+      font-size: 50px;
+      font-weight: 600;
+    }
+
+    dl dt::after {
+      padding-right: 5px;
+    }
+
+    dt {
+      display: block;
+    }
+
+    .lineAll {
+      height: 1px;
+      background-color: #ddd;
+      margin-left: 5px !important;
+      margin-right: 5px !important;
+      width: calc(100% - 20px) !important;
+    }
+
+    #tools {
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+      width: auto;
+      text-align: center;
+      padding-top: 15px;
+      margin-bottom: 0px;
+      margin-top: 0px;
+    }
+
+    #tools li {
+      padding-left: 20px;
+      display: inline-block;
+    }
+
+    .scroll4::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .scroll4::-webkit-scrollbar-thumb {
+      background: #666;
+      border-radius: 20px;
+    }
+
+    .scroll4::-webkit-scrollbar-track {
+      background: #ddd;
+      border-radius: 20px;
+    }
+  </style>
+  <ul id="slide-out" class="side-nav">
+  </ul>
+  <ul id="notifications-slide" class="side-nav">
+  </ul>
+  <header>
+    <div class="z-depth-3">
+      <div class="navbar-fixed " style="z-index:995">
+        <nav class="white black-text">
+          <div class="nav-wrapper black-text">
+            <a href="index.html" class="brand-logo center black-text">
+              <img src="img/logo.png" height="60px" width="auto"> </a>
+            <ul id="nav-mobile" class="right black-text">
+              <li>
+                <a class="tooltipped" id="notifications-button" data-position="left" data-delay="50" data-tooltip="Ver notificaciones" data-activates="notifications-slide">
+                  <i class="material-icons black-text">notifications</i>
+                </a>
+              </li>
+            </ul>
+            <ul id="nav-mobile" class="left ">
+              <li>
+                <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-out" id="menu-button" class="tooltipped">
+                  <i class="material-icons black-text">menu</i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <a onclick="crearPregunta()" id="addQuestion" class="waves-effect z-depth-3 waves-light btn-floating btn-large red white-text">
+        <i class="material-icons right hide-on-med-only">add</i>
+      </a>
+      <!-- NAVBAR WITH TOOLS FOR QUESTIONS -->
+      <div class="navbar-fixed z-depth-1" style="z-index:1">
+        <ul class="" id="tools">
+          <li class=" ">
+            <a href="#fileDownloadModal" class="waves-effect z-depth-3 modal-trigger    waves-light btn " href="badges.html">
+              <i class="material-icons right hide-on-med-only">perm_media</i>
+              <span class="hide-on-small-only">Ver imagenes</span>
+            </a>
+          </li>
+          <li class=" ">
+            <a class="waves-effect modal-trigger z-depth-3     waves-light btn" href="#ayuda">
+              <i class=" material-icons right ">info_outline</i>
+              <span class="hide-on-small-only">Ayuda</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- NAVBAR WITH TOOLS FOR QUESTIONS -->
+    </div>
+  </header>
+
+  <main class="grey lighten-3" ng-if="hideLoader">
+    <h4 id="nombreEncuesta" class="center-align" ng-cloak>{{data.nombre}}</h4>
+    <div class="row">
+      <div class="col s12">
+        <ul collapsible class="collapsible z-depth-4 " id="items" data-collapsible="accordion">
+
+          <li class="item" ng-repeat="(key, pregunta) in preguntas" ng-show="([pregunta] | filter:search).length" id="{{pregunta.$id}}">
+
+            <div class="collapsible-header" style="display: table; width: 100%; position: relative;">
+              <span class="superNumber">{{key+1}}</span>
+              <span class="nombreLabelItem hide-on-small-only" style="font-size: 10px;"> tipo: {{pregunta.tipo}}</span>
+              <div class="botonesList">
+                <i class="material-icons" ng-click="preguntas.$remove(pregunta)">delete</i>
+              </div>
+              <div style="display: table-row;" class="nombreItem" class="input-field col s6">
+                <!--<input ng-model-options="{debounce: {'default': 500} }"  ng-change="preguntas.$save(pregunta)" id="preguntaTexto{{key+1}}"  type="text" class="validate" ng-model="pregunta.texto">-->
+                <textarea ng-click=" $event.stopPropagation();" placeholder="Texto para la pregunta" style="border-color: lightblue;border-radius: 5px;padding: 5px; margin: 10px 0px 0px;resize: vertical;"
+                  ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" id="preguntaTexto{{key+1}}"
+                  ng-model="pregunta.texto"></textarea>
+              </div>
+            </div>
+            <div class="collapsible-body white">
+              <div class="row grey lighten-5 hoverable" style="border-radius: 5px">
+                <div class=" col s12 ">
+                  <select class="tipoPregunta browser-default" ng-change="preguntas.$save(pregunta)" ng-model="pregunta.tipo">
+                    <option value="" disabled>Seleccionar tipo de pregunta</option>
+                    <option value="multiple">Múltiple</option>
+                    <option value="unica">Opción única</option>
+                    <option value="multiple_acuerdo">Múltiple acuerdo</option>
+                    <option value="texto">Texto</option>
+                    <option value="escala">Escala de 1 a 10</option>
+                    <option value="nps">Escala NPS</option>
+                    <option value="smile">Smile scale</option>
+                    <option value="mensaje">Mensaje</option>
+                    <option value="accion">Llamada a la acción</option>
+                  </select>
+                  <label class="center-align">Tipo de pregunta</label>
+                </div>
+
+              </div>
+              <dl class="respuestasDL" id="dl-{{pregunta.$id}}">
+                <!-- DIV PARA MÚLTIPLE O ÚNICA -->
+                <div ng-if="pregunta.tipo == 'jefe'" class=" center ">
+                  <div>
+                    <div class="row grey lighten-5 hoverable " id="opcionTemplate" style="border-radius: 5px;" ng-if="orden!=0">
+
+                      <div class=" col s12 m5 l5 siguiente">
+                        <select ng-change="preguntas.$save(pregunta)" ng-model="respuesta.siguiente" class="siguientePreguntaSelect browser-default">
+                          <option value="">Siguiente por defecto</option>
+                          <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                          <option value="f">Terminar cuestionario</option>
+                        </select>
+                        <label class="center-align">Siguiente pregunta: </label>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DIV PARA MÚLTIPLE O ÚNICA -->
+                <div ng-if="pregunta.tipo == 'multiple' || pregunta.tipo == 'unica'" class=" center ">
+                  <div class="row grey lighten-5 hoverable">
+                    <div class="col s12">
+                      <select ng-change="preguntas.$save(pregunta)" ng-model="pregunta.tipo_2" class=" browser-default">
+                        <option value="">Ningún tipo de pregunta única por defecto</option>
+                        <option value="etnia">Etnia</option>
+                        <option value="escolaridad">Escolaridad</option>
+                        <option value="estado_civil">Estado civil</option>
+                        <option value="antivoto">Antivoto</option>
+                      </select>
+                    </div>
+                    <div class=" col s12 m5 l5 siguiente">
+                      <div class="switch" style="padding: 5px;">
+                        <label>
+                          NO, muestralo
+                          <input ng-change="preguntas.$save(pregunta)" type="checkbox" ng-model="pregunta.ocultar_texto">
+                          <span class="lever"></span>
+                          Si, ocultalo
+                        </label>
+                      </div>
+                      <label class="center-align">¿Ocultar texto? </label>
+                    </div>
+                    <div ng-if="pregunta.tipo == 'multiple' || pregunta.tipo == 'unica'" class="input-field col s12 m4 l4 offset-l1 center-align">
+                      <a style="margin-bottom: 20px;" class="waves-effect waves-light btn red respuestaAdd" ng-click="addRespuesta(pregunta.$id)">
+                        <i class="material-icons left">add</i>Respuesta</a>
+                    </div>
+                  </div>
+                  <div class="scroll4" style=" max-height: 350px;overflow-y: scroll;">
+                    <div class="row grey lighten-5 hoverable " id="opcionTemplate" ng-repeat="(orden, respuesta) in pregunta.respuestas" style="border-radius: 5px;"
+                      ng-if="orden!=0">
+
+                      <div class="input-field col s12 m6 l3 ">
+                        <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="respuesta.texto"
+                          class="texto-respuesta " placeholder="Texto de la respuesta" type="text">
+                        <label class="active">Respuesta: </label>
+                      </div>
+                      <div ng-if="pregunta.tipo == 'unica'" class=" col s12 m6 l3 siguiente">
+                        <select ng-change="preguntas.$save(pregunta)" ng-model="respuesta.siguiente" class="siguientePreguntaSelect browser-default">
+                          <option value="">Siguiente por defecto</option>
+                          <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                          <option value="f">Terminar cuestionario</option>
+                        </select>
+                        <label class="center-align">Siguiente pregunta: </label>
+                      </div>
+
+                      <div class="col s1 m1 l1" style="height: 100%">
+                        <i ng-click="removeRespuesta(pregunta.$id, orden)" class="material-icons text-darken-3 grey-text">delete</i>
+                      </div>
+                      <div class="input-field col s10 m9 l3">
+                        <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="respuesta.url" onchange="cargarImagenURL(this)"
+                          class="urlInput" type="text">
+                        <label class="truncate active">URL de la imagen:</label>
+                      </div>
+                      <div class="col s2 m3 l2 previewItemImageDiv">
+                        <img src="{{respuesta.url}}" alt="" class="previewItemImage responsive-img">
+                        <!-- notice the "circle" class -->
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DIV PARA MÚLTIPLE ACUERDO -->
+                <div ng-if="pregunta.tipo == 'multiple_acuerdo'" class=" center ">
+                  <div class="row">
+
+                    <div class="input-field col s2">
+                      <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="pregunta.opcion_1"
+                        class="texto-respuesta" placeholder="Opción 1" type="text">
+                    </div>
+                    <div class="input-field col s2">
+                      <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="pregunta.opcion_2"
+                        class="texto-respuesta" placeholder="Opción 2" type="text">
+                    </div>
+                    <div class="input-field col s2">
+                      <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="pregunta.opcion_3"
+                        class="texto-respuesta" placeholder="Opción 3" type="text">
+                    </div>
+                    <div class="input-field col s2">
+                      <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="pregunta.opcion_4"
+                        class="texto-respuesta" placeholder="Opción 4" type="text">
+                    </div>
+                    <div class="input-field col s2">
+                      <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="pregunta.opcion_5"
+                        class="texto-respuesta" placeholder="Opción 5" type="text">
+                    </div>
+                  </div>
+                  <div class="row grey lighten-5 hoverable">
+                    <div ng-if="pregunta.tipo == 'multiple_acuerdo' || pregunta.tipo == 'unica'" class="input-field col s12 m4 l4 center-align">
+                      <a style="margin-bottom: 20px;" class="waves-effect waves-light btn red respuestaAdd" ng-click="addRespuesta(pregunta.$id)">
+                        <i class="material-icons left">add</i>Respuesta</a>
+                    </div>
+                  </div>
+                  <div class="scroll4" style=" max-height: 350px;overflow-y: scroll;">
+                    <div class="row grey lighten-5 hoverable " id="opcionTemplate" ng-repeat="(orden, respuesta) in pregunta.respuestas" style="border-radius: 5px;"
+                      ng-if="orden!=0">
+                      <div class="input-field col s11 ">
+                        <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="respuesta.texto"
+                          class="texto-respuesta" placeholder="Texto de la respuesta" type="text">
+                        <label class="active" for="prueba">Texto de la pregunta: </label>
+                      </div>
+                      <div class="col s1 " style="height: 100%">
+                        <i ng-click="removeRespuesta(pregunta.$id, orden)" class="material-icons text-darken-3 grey-text">delete</i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DIV PARA TEXTO -->
+                <div ng-if="pregunta.tipo == 'texto'" class="row grey lighten-5 hoverable" id="textoTemplate" style="border-radius: 5px">
+                  <div class="input-field col s11 m5 l5 ">
+                    <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="pregunta.maxima"
+                      class="tooltipped maxima-respuesta" data-position="bottom" data-delay="50" data-tooltip="0 PARA SIN LÍMITE"
+                      type="text">
+                    <label for="prueba">Longitud máxima: </label>
+                  </div>
+                  <div class=" col s12 ">
+                    <div class="row">
+                      <p>¿Es obligatorio responder?:
+                        <div class="switch">
+                          <label>
+                            NO
+                            <input ng-change="preguntas.$save(pregunta)" ng-model="pregunta.forzar" type="checkbox">
+                            <span class="lever"></span>
+                            SI
+                          </label>
+                        </div>
+                      </p>
+                    </div>
+                  </div>
+                  <div class=" col s12 m5 l5 siguiente">
+                    <select ng-change="preguntas.$save(pregunta)" ng-model="pregunta.siguiente" class="siguientePreguntaSelect browser-default">
+                      <option value="">Siguiente por defecto</option>
+                      <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                      <option value="f">Terminar cuestionario</option>
+                    </select>
+                    <label class="center-align">Siguiente pregunta: </label>
+                  </div>
+                </div>
+
+                <!-- DIV PARA ESCALA -->
+                <div ng-if="pregunta.tipo == 'escala'" class="row grey lighten-5 hoverable" id="escalaTemplate" style="border-radius: 5px">
+
+                  <div class=" col s12 m5 l5 siguiente">
+                    <select ng-change="preguntas.$save(pregunta)" ng-model="pregunta.siguiente" class="siguientePreguntaSelect browser-default">
+                      <option value="">Siguiente por defecto</option>
+                      <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                      <option value="f">Terminar cuestionario</option>
+                    </select>
+                    <label class="center-align">Siguiente pregunta: </label>
+                  </div>
+                </div>
+                <!-- DIV PARA NPS -->
+                <div ng-if="pregunta.tipo == 'nps'" class="row grey lighten-5 hoverable" id="escalaTemplate" style="border-radius: 5px">
+                  <div class=" col s12 m5 l5 siguiente">
+                    <select ng-change="preguntas.$save(pregunta)" ng-model="pregunta.siguiente" class="siguientePreguntaSelect browser-default">
+                      <option value="">Siguiente por defecto</option>
+                      <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                      <option value="f">Terminar cuestionario</option>
+                    </select>
+                    <label class="center-align">Siguiente pregunta: </label>
+                  </div>
+                </div>
+
+                <!-- DIV PARA SMILE SCALE -->
+                <div ng-if="pregunta.tipo == 'smile'" class="row grey lighten-5 hoverable" id="smileTemplate" style="border-radius: 5px">
+                  <div class=" col s6 ">
+                    <div class="row">
+                      <p>Permitir comentario:
+                        <div class="switch">
+                          <label>
+                            NO
+                            <input ng-change="preguntas.$save(pregunta)" ng-model="pregunta.comentario" type="checkbox">
+                            <span class="lever"></span>
+                            SI
+                          </label>
+                        </div>
+                      </p>
+                    </div>
+
+                  </div>
+                  <div class=" col s6 ">
+                    <div class="row">
+                      <p>Si hay comentario, ¿es obligatorio responder?:
+                        <div class="switch">
+                          <label>
+                            NO
+                            <input ng-change="preguntas.$save(pregunta)" ng-model="pregunta.forzar" type="checkbox">
+                            <span class="lever"></span>
+                            SI
+                          </label>
+                        </div>
+                      </p>
+                    </div>
+
+                  </div>
+                  <div class="col s12 m12 l12 lineAll"></div>
+                  <div class="input-field col s11 m3  ">
+                    Siguiente pregunta para
+                    <b>Satisfecho</b>
+                  </div>
+
+                  <div class="col s12 m3 siguiente">
+                    <select ng-change="preguntas.$save(pregunta)" ng-model="pregunta.gran" class="siguientePreguntaSelect browser-default">
+                      <option value="">Siguiente por defecto</option>
+                      <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                      <option value="f">Terminar cuestionario</option>
+                    </select>
+                    <label class="center-align">Siguiente pregunta: </label>
+
+                  </div>
+                  <div class="input-field col s12 m3">
+                    <input ng-change="preguntas.$save(pregunta)" ng-model="pregunta.granP" value="" type="number" class="validate">
+                    <label>Ponderación para Satisfecho</label>
+                  </div>
+                  <div class="col s12 m12 l12 lineAll"></div>
+                  <div class="input-field col s11 m3 ">
+                    Siguiente pregunta para
+                    <b>Neutro</b>
+                  </div>
+                  <div class=" col s12  m3 siguiente">
+                    <select ng-change="preguntas.$save(pregunta)" ng-model="pregunta.mediana" class="siguientePreguntaSelect browser-default">
+                      <option value="">Siguiente por defecto</option>
+                      <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                      <option value="f">Terminar cuestionario</option>
+                    </select>
+                    <label class="center-align">Siguiente pregunta: </label>
+                  </div>
+                  <div class="input-field col s12 m3  ">
+                    <input ng-change="preguntas.$save(pregunta)" ng-model="pregunta.medianaP" value="" type="number" class="validate">
+                    <label>Ponderación para Neutro</label>
+                  </div>
+                  <div class="col s12 m12 l12 lineAll"></div>
+                  <div class="input-field col s11 m3 ">
+                    Siguiente pregunta para
+                    <b>Insatisfecho</b>
+                  </div>
+                  <div class="col s12 m3 siguiente">
+                    <select ng-change="preguntas.$save(pregunta)" ng-model="pregunta.ninguna" class="siguientePreguntaSelect browser-default">
+                      <option value="">Siguiente por defecto</option>
+                      <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                      <option value="f">Terminar cuestionario</option>
+                    </select>
+                    <label class="center-align">Siguiente pregunta: </label>
+                  </div>
+                  <div class="input-field col s12 m3  ">
+                    <input ng-change="preguntas.$save(pregunta)" ng-model="pregunta.ningunaP" value="" type="number" class="validate">
+                    <label>Ponderación para Insatisfecho</label>
+
+                  </div>
+                </div>
+                <!-- DIV PARA MENSAJE -->
+                <div ng-if="pregunta.tipo == 'mensaje'" class="row grey lighten-5 hoverable" style="border-radius: 5px">
+
+                  <div class=" col s12 m5 l5 siguiente">
+                    <select ng-change="preguntas.$save(pregunta)" ng-model="pregunta.siguiente" class="siguientePreguntaSelect browser-default">
+                      <option value="">Siguiente por defecto</option>
+                      <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                      <option value="f">Terminar cuestionario</option>
+                    </select>
+                    <label class="center-align">Siguiente pregunta: </label>
+                  </div>
+                </div>
+                <!-- DIV PARA ACCION -->
+                <div ng-if="pregunta.tipo == 'accion'" class="row grey lighten-5 hoverable" style="border-radius: 5px">
+                  <div class="input-field col s11 m5 l5 ">
+                    <input ng-model-options="{debounce: {'default': 500} }" ng-change="preguntas.$save(pregunta)" ng-model="pregunta.boton" class="tooltipped maxima-respuesta"
+                      data-position="bottom" data-delay="50" data-tooltip="0 PARA SIN LÍMITE" type="text">
+                    <label>Texto para el botón de la acción: </label>
+                  </div>
+                  <div class="input-field col s11 m5 l5 ">
+                    <input ng-model-options="{debounce: {'default': 500} }" id="d-{{pregunta.$id}}" onchange="ValidURL(this)" ng-change="preguntas.$save(pregunta)"
+                      ng-model="pregunta.accion" class="tooltipped maxima-respuesta" data-position="bottom" data-delay="50"
+                      data-tooltip="0 PARA SIN LÍMITE" type="text">
+                    <label>URL de la acción: </label>
+                  </div>
+                  <div class=" col s12 m5 l5 siguiente">
+                    <select ng-change="preguntas.$save(pregunta)" ng-model="pregunta.siguiente" class="siguientePreguntaSelect browser-default">
+                      <option value="">Siguiente por defecto</option>
+                      <option ng-repeat="(k, pregunta) in preguntas track by $index" ng-show="$index > key" value="{{$index+1}}">Pregunta {{$index+1}} -{{pregunta.texto}}-</option>
+                      <option value="f">Terminar cuestionario</option>
+                    </select>
+                    <label class="center-align">Siguiente pregunta: </label>
+                  </div>
+                </div>
+            </div>
+            </dl>
+
+          </li>
+        </ul>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal Structure -->
+  <div id="fileDownloadModal" class="modal modal-files col s12 m6 l3 white">
+    <div class="modal-content">
+
+      <div class="file-field input-field" style="margin: 0 !important;">
+        <div class=" btn-floating btn-large waves-effect waves-light red" style="height: 56px !important">
+          <i class="material-icons">add</i>
+          <input id="newFileInput" type="file">
+        </div>
+      </div>
+      <div class="fileModalUp grey darken-3 " style="height: 75px;">
+        <h4 class="white-text center-align truncate" style="margin:auto; font-weight:600; padding-top:25px;">IMAGENES PARA LA ENCUESTA</h4>
+      </div>
+      <div class="fileModalBottom ">
+        <div id="imagenesCarpet" class="row">
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal Structure -->
+  <div id="dialogModal" style="z-index: 10000" class="modal white">
+    <div class="modal-content white" style="padding: 15px">
+      <br>
+      <br>
+      <div class="row">
+        <div class="col s10 m8 l6 offset-s1 offset-m2 offset-l3">
+          <h4 id="tituloDialogModal" class="black-text"></h4>
+          <p id="textoDialogModal" class="black-text"></p>
+        </div>
+        <div id="estadoSelectDiv" style="display:none">
+          <div class="row">
+            <div class=" col s12 m8 offset-m2">
+              <select id="estadoSelect" ng-model="data.estado">
+                <option value="" disabled selected>Selecciona el nuevo estado</option>
+                <option value="ACTIVO">ACTIVO</option>
+                <option value="PAUSADO">PAUSADO</option>
+              </select>
+              <label>Selecciona el estado deseado</label>
+            </div>
+          </div>
+        </div>
+        <div id="preDialogModal" class="col s10 m8 l6 offset-s1 offset-m2 offset-l3" style="display:none">
+          <div class="progress">
+            <div class="indeterminate blue"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="footerDialogModal" class="modal-footer white">
+      <a href="#!" id="cancelarDialogModal" class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+      <a href="#!" id="aceptarDialogModal" class="modal-action modal-close waves-effect waves-green btn-flat">Aceptar</a>
+    </div>
+  </div>
+  <!-- Modal EXCEL -->
+  <div id="excelModal" class="modal white modal-fixed-footer">
+    <div class="modal-content ">
+      <div class="topModal green darken-4">
+        <h4>Selecciona el archivo de Excel</h4>
+        <i class="large material-icons">explicit</i>
+      </div>
+      <p class="center-align">
+        <br>
+        <br> Por favor seleccione el archivo de Excel, recuerde debe tener un formato preestablecido, si lo desea puede descargarlo
+        desde aquí
+        <a href="https://firebasestorage.googleapis.com/v0/b/surveygtc-d6270.appspot.com/o/FORMATO_ENCUESTAS.xlsx?alt=media&token=7b5dab84-a430-45f1-bc2f-25e786bede6f">FORMATO_ENCUESTAS.xlsx</a>
+        <br> </p>
+      <div class="row" style="padding:20px;">
+        <div class="">
+          <div class="progress">
+            <div id="progresoExcel" class="determinate green darken-3" style="width: 0%"></div>
+          </div>
+        </div>
+        <form action="#">
+          <div class="file-field input-field">
+            <div class="btn waves-effect waves-light green darken-2 center-align">
+              <span class="">CARGAR</span>
+              <input id="excel-file" style="opacity:0" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                type="file">
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text">
+            </div>
+          </div>
+          <p id="errorExcel"></p>
+        </form>
+      </div>
+    </div>
+    <div class="modal-footer ">
+      <a class="modal-action modal-close waves-effect waves-green btn green darken-4">Aceptar</a>
+    </div>
+  </div>
+  <!-- Modal Structure -->
+  <div id="crearPregunta" class="modal modal-fixed-footer">
+    <form id="crearPreguntaForm" class="cmxform black-text" method="get" action="">
+      <div class="modal-content white">
+        <div class="topModal    ">
+          <h4>Crear una pregunta</h4>
+          <i class="large material-icons">question_answer</i>
+        </div>
+        <br>
+        <div class="row">
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input id="nombre" name="nombre" type="text" class="validate" required="">
+            <label for="nombre">Nombre para la encuesta</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input id="descripcion" name="descripcion" type="text" class="validate" required="">
+            <label for="descripcion">Descripción</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Imagen para la encuesta</span>
+                <input required="" accept="image/*" id="imagen" name="imagen" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+              <div class="col s12 center-align">
+                <img id="imgPreview">
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3 blue-text text-darken-3">
+            <div class="progress">
+              <div id="progresoFile" class="determinate" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input id="inicioVigencia" name="inicioVigencia" type="text" class="validate" required="">
+            <label for="inicioVigencia">Inicio de vigencia</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input id="finalVigencia" name="finalVigencia" type="text" class="validate" required="">
+            <label for="finalVigencia">Final de vigencia</label>
+          </div>
+          <div class=" col s10 offset-s1 m8 offset-m2">
+            <select id="estado" name="estado" required="">
+              <option value="" disabled selected>Selecciona el estado actual</option>
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="PAUSADO">PAUSADO</option>
+            </select>
+          </div>
+          <div class="col s10 offset-s1" style="height: 120px;">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+        <button type="submit" id="sendDiv" class="waves-effect waves-green     btn ">Aceptar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Structure -->
+  <div id="ayuda" class="modal modal-fixed-footer">
+
+    <div class="modal-content white">
+      <div class="topModal    ">
+        <h4>Sobre preguntas y respuestas:</h4>
+        <i class="large material-icons">business</i>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col s12">
+          <ul class="stepper linear">
+            <li class="step active">
+              <div class="step-title waves-effect">Crear encuesta</div>
+              <div class="step-content">
+                <div class="row">
+                  <p>Si has llegado a esta sección es porque ha logrado crear una encuesta satisfactoriamente, en esta parte
+                    usted sólo podrás modificar preguntas y respuestas
+                </div>
+                <div class="step-actions">
+                  <button class="waves-effect waves-dark btn next-step">SEGUIR</button>
+                </div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-title waves-effect">Añadir una pregunta</div>
+              <div class="step-content">
+                <div class="row">
+                  <p>En Smart Insight, tu puedes crear preguntas y respuestas, para ello debes dar clíc en "Añadir pregunta"
+                    o utilizar el importador de Excel (Último paso).
+                    <br>
+                    <br>Sin embargo, debe tomar en cuenta que al momento de crear esta pregunta se encontrará "vacía", por lo
+                    que debes ingresar un texto que represente la pregunta y seleccionar el tipo de pregunta.
+                </div>
+                <div class="step-actions">
+                  <button class="waves-effect waves-dark btn next-step">SEGUIR</button>
+                  <button class="waves-effect waves-dark btn-flat previous-step">ATRÁS</button>
+                </div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-title waves-effect">Tipo de preguntas</div>
+              <div class="step-content">
+                <div class="row">
+                  <p>Para seleccionar el tipo de pregunta debe primero expandir la pregunta, para ello puedes hacer clic en
+                    el encabezado de la pregunta y luego en "Tipo de pregunta" hacer clic, se mostrarán todas las opciones
+                    disponibles hasta el momento.
+                </div>
+                <div class="step-actions">
+                  <button class="waves-effect waves-dark btn next-step">SEGUIR</button>
+                  <button class="waves-effect waves-dark btn-flat previous-step">ATRÁS</button>
+                </div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-title waves-effect">Cambiar el orden de las preguntas</div>
+              <div class="step-content">
+                <div class="row">
+                  <p>Para poder cambiar el orden de las preguntas basta con arrastrar el encabezado de la pregunta hacia la
+                    nueva posición, para ello presiona el botón izquierdo de su mouse y muevalo hacia la dirección deseada,
+                    sueltalo cuando se encuentre en la posición correcta.
+                </div>
+                <div class="step-actions">
+                  <button class="waves-effect waves-dark btn next-step">SEGUIR</button>
+                  <button class="waves-effect waves-dark btn-flat previous-step">ATRÁS</button>
+                </div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-title waves-effect">Guardar los cambios</div>
+              <div class="step-content">
+                <div class="row">
+                  <p>Smart Insight guarda los cambios por ti, no debes guardar nunca, por lo mismo intenta pausar aquellas encuestas
+                    que se encuentren en edición o desarrollo.
+                </div>
+                <div class="step-actions">
+                  <button class="waves-effect waves-dark btn next-step">SEGUIR</button>
+                  <button class="waves-effect waves-dark btn-flat previous-step">ATRÁS</button>
+                </div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-title waves-effect">Cargar imagenes</div>
+              <div class="step-content">
+                <div class="row">
+                  En Smart Insight no limitamos, cargar imagenes puede ser tan sencillo como subir las imagenes al folder y copiar al portapapeles
+                  el origen de esa imagen o bién con pegar el origen de la imagen. Para usar imagenes desde el Visor de imagenes,
+                  es necesario hacer clic en "Ver imagenes", cargar haciendo clic en "+", y luego clic en el ícono azul que
+                  muestra "Copiar URL" y listo.
+                  <br>
+                  <br> Para poder hacer uso de la imagen copiada al portapapeles basta con pegarlo mediante Ctrl+V O Cmd+V en
+                  el campo que indique "URL de la imagen".
+                </div>
+                <div class="step-actions">
+                  <button class="waves-effect waves-dark btn next-step">SEGUIR</button>
+                  <button class="waves-effect waves-dark btn-flat previous-step">ATRÁS</button>
+                </div>
+              </div>
+            </li>
+            <li class="step">
+              <div class="step-title waves-effect">Crear encuesta desde Excel</div>
+              <div class="step-content">
+                Crear una encuesta desde Excel es muy sencillo, para ello puedes descargar nuestra plantilla (Clíc en Importar Excel), llena
+                cada una de las preguntas como una fila y si esta tiene respuestas debe ir inmediatamente en la fila inferior.
+                Actualmente, es posible crear por completo una encuesta, sin embargo tienes que ser cuidadoso con la información
+                que subes y te recomendamos revisar antes de publicar.
+
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class=" modal-action modal-close waves-effect waves-green     btn ">Cerrar</button>
+    </div>
+
+  </div>
+
+  <!-- DIV TEMPLATES FOR QUESTION TYPES -->
+  <div style="display: none">
+    <!-- DIV PARA OPCIONES -->
+
+    <div class="row grey lighten-5 hoverable" id="opcionTemplate" style="border-radius: 5px">
+      <div class="input-field col s11 m5 l5 ">
+        <input class="texto-respuesta" type="text">
+        <label for="prueba">Respuesta: </label>
+      </div>
+      <div class=" col s12 m5 l5 siguiente">
+        <select class="siguientePreguntaSelect browser-default">
+        </select>
+        <label class="center-align">Siguiente pregunta: </label>
+      </div>
+      <div class="col s1 m1 l1" style="height: 100%">
+        <i class="material-icons text-darken-3 grey-text">delete</i>
+      </div>
+      <div class="input-field col s10 m9 l8">
+        <input onchange="cargarImagenURL(this)" class="urlInput" type="text">
+        <label class="truncate" for="prueba">URL de la imagen: (Utilice el visor de archivos para copiar el URL)</label>
+      </div>
+      <div class="col s2 previewItemImageDiv">
+        <img src="http://cumbrianrun.co.uk/wp-content/uploads/2014/02/default-placeholder.png" alt="" class="previewItemImage responsive-img">
+        <!-- notice the "circle" class -->
+      </div>
+    </div>
+
+    <!-- DIV PARA TEXTO -->
+    <div class="row grey lighten-5 hoverable" id="textoTemplate" style="border-radius: 5px">
+      <div class="input-field col s11 m5 l5 ">
+        <input class="tooltipped maxima-respuesta" data-position="bottom" data-delay="50" data-tooltip="0 PARA SIN LÍMITE" type="text">
+        <label for="prueba">Longitud máxima: </label>
+      </div>
+      <div class="input-field col s11 m5 l5 ">
+
+        <label class="center-align">Requerido (forzar a responder): </label>
+      </div>
+      <div class=" col s12 m5 l5 siguiente">
+        <select class="siguientePreguntaSelect browser-default">
+        </select>
+        <label class="center-align">Siguiente pregunta: </label>
+      </div>
+    </div>
+
+    <!-- DIV PARA ESCALA -->
+    <div class="row grey lighten-5 hoverable" id="escalaTemplate" style="border-radius: 5px">
+      <div class="input-field col s11 m5 l5 ">
+        <input onmouseover="cargarColorInput(this)" type="text" class="color no-alpha color-slider-respuesta">
+        <label for="prueba">Color del slider: </label>
+      </div>
+      <div class=" col s12 m5 l5 siguiente">
+        <select class="siguientePreguntaSelect browser-default">
+        </select>
+        <label class="center-align">Siguiente pregunta: </label>
+      </div>
+    </div>
+
+    <!-- DIV PARA SMILE SCALE -->
+    <div class="row grey lighten-5 hoverable" id="smileTemplate" style="border-radius: 5px">
+      <div class="input-field col s11 m5 l5  ">
+        Siguiente pregunta para
+        <b>Satisfecho</b>
+      </div>
+      <div class=" col s12 m6 l6 siguiente gran">
+        <select class="siguientePreguntaSelect browser-default gran">
+        </select>
+        <label class="center-align">Siguiente pregunta: </label>
+      </div>
+      <div class="col s12 m12 l12 lineAll"></div>
+      <div class=" col s11 m5 l5 ">
+        Siguiente pregunta para
+        <b>Neutro</b>
+      </div>
+      <div class=" col s12 m6 l6 siguiente mediana">
+        <select class="siguientePreguntaSelect browser-default mediana">
+        </select>
+        <label class="center-align">Siguiente pregunta: </label>
+      </div>
+      <div class="col s12 m12 l12 lineAll"></div>
+      <div class=" col s11 m5 l5 ">
+        Siguiente pregunta para
+        <b>Insatisfecho</b>
+      </div>
+      <div class=" col s12 m6 l6 siguiente ninguna">
+        <select class="siguientePreguntaSelect browser-default ninguna">
+        </select>
+        <label class="center-align">Siguiente pregunta: </label>
+      </div>
+    </div>
+  </div>
+  <footer class="   white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">Somos más</h5>
+          <ul id='credits'>
+            <li>
+              Proyecto de Somos más
+            </li>
+            <li>
+              Hecho para uso de Somos más y sus clientes filiales.
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Octubre de 2017]</span>
+      </div>
+    </div>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyD_Fb9LnnBbRcsB5QV-BmmA-bMM8gLbB9s",
+    authDomain: "somos-mas-gt.firebaseapp.com",
+    databaseURL: "https://somos-mas-gt.firebaseio.com",
+    projectId: "somos-mas-gt",
+    storageBucket: "somos-mas-gt.appspot.com",
+    messagingSenderId: "376543751718"
+  };
+  firebase.initializeApp(config);
+</script>
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+<!-- EXCEL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/cpexcel.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/jszip.js"></script>
+
+<!-- AngularFire -->
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://cdn.rawgit.com/renatorib/janimate/master/dist/janimate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+<script src="js/materialize-stepper.min.js"></script>
+<script src="js/color.min.js"></script>
+<script src="js/moment.js"></script>
+<script src="js/pikaday.js"></script>
+<script src="js/pikaday.jquery.js"></script>
+<script src="js/initLogin.js"></script>
+<script src="js/respuestas.js"></script>
+<script src="js/addWait.js"></script>
+<script src="js/usuarios.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.6.0/Sortable.min.js"></script>
+
+</html>

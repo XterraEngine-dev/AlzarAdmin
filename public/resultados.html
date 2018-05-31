@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html ng-app="resultados">
+<head>
+<meta charset="UTF-8">
+<title>Somos más RESULTADOS</title>  
+<!-- Compiled and minified CSS -->
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+<!--Import Google Icon Font-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!-- Cambios personales -->
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/pikaday.css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+<link rel="stylesheet" href="css/materialize-stepper.min.css">
+<link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+<link rel="manifest" href="favicon/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+</head>
+<body ng-controller="resultadosCtrl">
+  <style>
+    .error{ 
+        margin-top: 40px;
+        margin-bottom: 40px;
+      }
+      .select-wrapper input.select-dropdown  {
+        border: none;
+        background-color: white;
+        color: #333;
+        
+        border-radius: 25px !important;
+        margin-top: 10px !important;
+        margin-left: 5px !important;
+        padding: 5px !important;
+        border-radius: 15px;
+        text-align: center;
+      }
+      .especialM {
+        float: left;
+        position: relative;
+        left: 50%;
+      }
+      .especial {
+        float: left;
+        position: relative;
+        left: -50%;
+      }
+      .material-icons{
+        cursor:pointer;
+      }
+      .cp-color-picker {
+        z-index: 10000;
+      }
+      .card-image {
+        padding-top:100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size:contain;
+      }
+      .select-dropdown {
+          padding-top: 10px !important;
+      }
+      .caret {
+          color: white !important;
+          padding-top: 5px;
+      }
+      .select-wrapper.initialized {
+          width: 280px;
+      }
+      .caret {
+          display: none;
+      }
+      table {
+        overflow-x: scroll;
+      }
+      td { 
+        white-space:pre;
+        max-width: 120px;
+        word-break:break-word;
+      }
+      .scroll4::-webkit-scrollbar {
+        width: 10px;
+      }
+      
+      .scroll4::-webkit-scrollbar-thumb {
+        background: #666;
+        border-radius: 20px;
+      }
+
+      .scroll4::-webkit-scrollbar-track {
+        background: #ddd;
+        border-radius: 20px;
+      }
+
+      #tools {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        white-space: nowrap;
+        width: auto;
+        text-align: center;
+        padding-top: 15px;
+        margin-bottom: 0px;
+        margin-top: 0px;
+      }
+      #tools li {
+        padding-left: 20px;
+        display: inline-block;
+      }
+    </style>
+  <ul style="z-index: 9000" id="slide-out" class="side-nav">
+      
+    </ul>
+    <ul id="notifications-slide" class="side-nav">
+     
+    </ul>
+    <ul id="filter-slide" class="side-nav    white-text">
+        <div class="topModal white-text ">
+            <h4>Filtrar Resultados</h4>
+            <i class="large material-icons">filter_list</i>
+        </div>
+          <div class="section">
+            <div class="row">
+              <div class="col s10 offset-s1 m8 offset-m2">
+                <p>Selecciona los campos que desees para poder filtrar</p>
+              </div>
+            </div>
+          </div>
+          <form id="filtroForm">
+              <div class="section">
+                  <div class="row">
+                      <div class="col s11 input-field">
+                        <li>
+                          <select id="preguntaSeleccionada" ng-change="actualizarSelect()" ng-model="preguntaSeleccionada"> 
+                            <option ng-show="preguntaSeleccionada != ''" value="">Selecciona una pregunta</option>
+                            <option ng-repeat="(key, pregunta) in encuesta.preguntas" ng-if="pregunta.tipo != 'mensaje' && pregunta.tipo != 'accion' && pregunta.tipo != 'texto'" value="{{key}}">{{pregunta.texto}}</option>
+                          </select>
+                        </li>
+                      </div>
+                    </div>
+                <div class="row">
+                  <div class="input-field col s10 offset-s1 m8 offset-m2">
+                    <input id="inicioVigencia" name="inicioVigencia" type="text" class="validate valid" required="" aria-required="true" aria-label="Use the arrow keys to pick a date" aria-invalid="false">
+                    <label for="inicioVigencia" class="active">Inicio de resultados</label>
+                  </div>
+                  <div class="input-field col s10 offset-s1 m8 offset-m2">
+                    <input id="finalVigencia"  name="finalVigencia" type="text" class="validate valid" required="" aria-required="true" aria-label="Use the arrow keys to pick a date" aria-invalid="false">
+                    <label for="finalVigencia" class="active">Final de resultados</label>
+                  </div>
+                  <div class=" col s10 offset-s1 m8 offset-m2">
+                    Si desea todos los resultados dentro del periodo, seleccione la casilla
+                    <div class="switch">
+                        <label>
+                          NO
+                          <input ng-change="actualizarSelect()" ng-model="mostrarTodo" type="checkbox" id="todos">
+                          <span class="lever"></span>
+                          SI, TODOS
+                        </label>
+                    </div>
+                  </div>
+                  <div ng-show="!mostrarTodo">
+                    <div id="empresaSelectDIV" class="input-field col s11 ">
+                      <select ng-change="actualizarSelect()" ng-model="empresaSeleccionada" id="empresaSelect"> 
+                        <option value=""  >Sin seleccionar una empresa</option>
+                        <option ng-repeat="(key, empresa) in filtroData" value="{{key}}" >{{empresa.nombre}}</option>
+                      </select>
+                    </div>
+                    <div id="regionSelectDIV" class="input-field col s11">
+                        <select ng-model="regionSeleccionada" ng-change="actualizarSelect()" id="regionSelect"> 
+                          <option value=""  >Sin seleccionar una región</option>
+                          <option ng-repeat="(i, region) in filtroData[empresaSeleccionada].regiones" value="{{i}}" >{{region.nombre}}</option>
+                        </select>
+                    </div>
+                    <div id="distritoSelectDIV" class="input-field col s11">
+                      <select ng-model="distritoSeleccionado" ng-change="actualizarSelect()" id="distritoSelect"> 
+                        <option value=""  >Sin seleccionar un distrito</option>
+                        <option ng-repeat="(j, distrito) in filtroData[empresaSeleccionada].regiones[regionSeleccionada].distritos" value="{{j}}">{{distrito.nombre}}</option>
+                      </select>
+                    </div>
+                    <div id="sucursalSelectDIV" class="input-field col s11">
+                      <select id="sucursalSelect" ng-change="cargarAgentes()" ng-model="sucursalSeleccionada"> 
+                        <option value=""  >Sin seleccionar una sucursal</option>
+                        <option ng-repeat="(k, sucursal) in filtroData[empresaSeleccionada].regiones[regionSeleccionada].distritos[distritoSeleccionado].sucursales" value="{{k}}">{{sucursal.nombre}}</option>
+                      </select>
+                    </div>
+                    <div id="agenteSelectDIV" class="input-field col s11">
+                      <select id="agenteSelect" ng-change="actualizarSelect()" ng-model="agenteSeleccionado"> 
+                        <option value=""  >Sin seleccionar un agente (correo electrónico)</option>
+                        <option ng-repeat="(l, agente) in filtroData[empresaSeleccionada].regiones[regionSeleccionada].distritos[distritoSeleccionado].sucursales[sucursalSeleccionada].agentes" value="{{l}}">{{agente.correo}} - {{agente.nombres}}, {{agente.apellidos}}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </form>
+      </ul>
+
+  <header>
+    <div class="navbar-fixed">
+      <nav class="white black-text">
+        <div class="nav-wrapper black-text">
+          <a href="index.html" class="brand-logo center black-text"><img src="img/logo.png" height="60px" width="auto"> </a>
+          
+          <ul id="nav-mobile" class="right black-text">
+            <li><a class="tooltipped"  id="notifications-button" data-position="left" data-delay="50" data-tooltip="Ver notificaciones" data-activates="notifications-slide"><i class="material-icons black-text">notifications</i></a></li>
+          </ul>
+          <ul id="nav-mobile" class="left ">
+            <li><a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-out" id="menu-button" class="tooltipped"><i class="material-icons black-text">menu</i></a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="navbar-fixed z-depth-1" style="z-index:1">
+      <ul class="" id="tools">
+        
+        <li class=" "><a href="consolidado.html" class="waves-effect z-depth-3 red waves-light btn "><i class="material-icons right hide-on-med-only">view_list</i><span class="hide-on-small-only">Ver consolidado</span></a></li>        
+        <li class=" "><a ng-click="cargarExcel()" class=" waves-effect z-depth-3 green darken-4 waves-light btn"><i class="material-icons right hide-on-med-only">explicit</i><span class="hide-on-small-only">Exportar a Excel</span></a></li>
+        <li class=" "><a id="bfilter-slide" data-activates="filter-slide"   class="waves-effect button-collapse z-depth-3     waves-light btn" ><i class=" material-icons right ">filter_list</i><span class="hide-on-small-only">Filtrar</span></a></li>
+      </ul>
+    </div>
+  </header>
+  
+  <main>
+    <div class="section">
+      
+      <div class="row">
+          <h2 id="nombreEncuesta" href="#" class="heading center-align">{{encuesta.nombre}} </h2>
+      </div>
+    </div>
+    <div class="section">
+      <div class="row">
+        <div class="col s12">
+          <nav class="nav-extended    ">
+            <div  class="nav-content">
+              <ul ng-show="encuesta.preguntas[preguntaSeleccionada].tipo == 'multiple' || encuesta.preguntas[preguntaSeleccionada].tipo == 'unica' || encuesta.preguntas[preguntaSeleccionada].tipo == 'escala' || encuesta.preguntas[preguntaSeleccionada].tipo == 'smile' " class="tabs tabs-transparent tabs-fixed-width">
+                <li id="barrasTab" class="tab"><a class="active" href="#barras">En Barras</a></li>
+                <li id="pieTab" class="tab"><a href="#pie">En Pie</a></li>
+                <li id="tablaTab" class="tab"><a href="#tabla">En Tabla</a></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="section" >
+      <div class="row" ng-show="mostrarResultados == true">
+        <h4 class="center-align" id="tituloPregunta">{{actualPregunta}}<br></h4>
+  
+        <div ng-show="encuesta.preguntas[preguntaSeleccionada].tipo == 'multiple_acuerdo' ||  encuesta.preguntas[preguntaSeleccionada].tipo == 'multiple' || encuesta.preguntas[preguntaSeleccionada].tipo == 'unica' || encuesta.preguntas[preguntaSeleccionada].tipo == 'escala' || encuesta.preguntas[preguntaSeleccionada].tipo == 'smile' ">
+        <div ng-if="encuesta.preguntas[preguntaSeleccionada].tipo != 'multiple_acuerdo'">
+          <div  style="border-radius: 15px; height: 450px !important; position:relative;" class="col s12 m10 l8 offset-m1 offset-l2" id="barras" >
+              <canvas id="barrasC" chart-options="opciones" chart-legend="true" legend="true" class="chart chart-bar" chart-colors="resultadosData.colors" chart-data="resultadosData.contador" chart-labels="resultadosData.labels"  chart-series="resultadosData.series"
+            ></canvas>
+            <a  onclick="descargarCanvas(this)" class="btn waves-effect black" style="position: absolute;top: -40px;right: 0px;"><i class=" material-icons">file_download</i></a>
+          </div>
+          <div class="col s12 white" id="pie" style="height: 450px;position:relative;">
+              <canvas id="pieC" chart-options="pieOpciones" chart-legend="true" legend="true" class="chart chart-doughnut" chart-colors="resultadosData.colors" chart-data="resultadosData.contador" chart-labels="resultadosData.labels"  chart-series="resultadosData.series"
+              ></canvas>
+              <a onclick="descargarCanvas(this)" class="btn waves-effect black" style="position: absolute;top: -40px;right: 0px;"><i class=" material-icons">file_download</i></a>
+          </div>
+          <div class="col s12 m10 offset-m1 l8 offset-l2 white" id="tabla">
+            <div class="row">
+              <div class="col s12">
+                <div class="card-panel">
+                    <h6>Tabla de resultados</h6>
+                    <table class="striped">
+                      <thead>
+                        <tr>
+                          <th>Respuesta</th>
+                          <th>Contador 
+                              <div class="switch">
+                                <label>
+                                  No.
+                                  <input type="checkbox" ng-model="porcentaje">
+                                  <span class="lever"></span>
+                                  %
+                                </label>
+                              </div>
+                          </th>
+                          <th ng-show="encuesta.preguntas[preguntaSeleccionada].tipo == 'smile'">Ponderación</th>
+                        </tr>
+                      </thead>
+                  
+                      <tbody id="tablaResultados">
+                          <tr ng-repeat="resultado in resultadosData.data">
+                              <td>{{resultado.label}}</td>
+                              <td ng-show="porcentaje">{{resultado.porcentaje}}% </td>
+                              <td ng-show="!porcentaje">{{resultado.contador}}</td>
+                              <td ng-show="encuesta.preguntas[preguntaSeleccionada].tipo == 'smile'">{{resultado.ponderacion}}</td>
+                          </tr>
+                          <tr>
+                              <td style="text-align:right" >Total: </td>
+                              <td ng-show="!porcentaje">{{total}}</td>
+                              <td ng-show="porcentaje"> 100%</td> 
+                              <td ng-show="encuesta.preguntas[preguntaSeleccionada].tipo == 'smile'"> <b>{{totalPonderacion}}</b> </td>
+                          </tr>
+                      </tbody>
+                    </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="" ng-if="encuesta.preguntas[preguntaSeleccionada].tipo == 'multiple_acuerdo'" ng-repeat="(key, respuesta) in resultadosData.contador" >
+            <div class="row">
+                <div class="col s12 m8 l6 offset-m2 offset-l3">
+                  <div class="card white">
+                      <div class="card-content">
+                        <span class="card-title">{{resultadosData.nombresContadores[key]}}</span>
+                      </div>
+                      <div class="card-tabs">
+                          <ul class="tabs tabs-fixed-width">
+                            <li class="tab"><a class="active" href="#barrasCT{{key}}">Barras</a></li>
+                            <li class="tab"><a  href="#pieCT{{key}}">Pie</a></li>
+                            <li class="tab"><a href="#tablaCT{{key}}">Tabla</a></li>
+                          </ul>
+                      </div>
+                      <div class="card-content ">
+                        <div class="row">
+                          <div id="barrasCT{{key}}" style="border-radius: 15px; height: 450px !important; position:relative;" class="col s12 m10 l8 offset-m1 offset-l2" id="barras" >
+                              <canvas  chart-options="opciones" chart-legend="true" legend="true" class="chart chart-bar" chart-colors="resultadosData.colors" chart-data="respuesta" chart-labels="resultadosData.labelsMultiples"  chart-series="[resultadosData.labels[key]]"
+                            ></canvas>
+                            <a onclick="descargarCanvas(this)" class="btn waves-effect black" style="position: absolute;top: -40px;right: 0px;"><i class=" material-icons">file_download</i></a>
+                          </div>
+                          <div class="col s12 white" id="pieCT{{key}}" style="height: 450px;position:relative;">
+                              <canvas chart-options="pieOpcionesSin" chart-legend="true" legend="true" class="chart chart-doughnut" chart-colors="resultadosData.colors" chart-data="respuesta" chart-labels="resultadosData.labelsMultiples"  chart-series="[resultadosData.labels[key]]"
+                              ></canvas>
+                              <a onclick="descargarCanvas(this)" class="btn waves-effect black" style="position: absolute;top: -40px;right: 0px;"><i class=" material-icons">file_download</i></a>
+                          </div>
+                          <div class="col s12 m10 offset-m1 l8 offset-l2 white" id="tablaCT{{key}}">
+                            <div class="row">
+                              <div class="col s12">
+                                <div class="card-panel">
+                                    <h6>Tabla de resultados</h6>
+                                    {{respuesta}}
+                                    <table class="striped">
+                                      <thead>
+                                        <tr>
+                                          <th>Respuesta</th>
+                                          <th>Contador 
+                                              <div class="switch">
+                                                <label>
+                                                  No.
+                                                  <input type="checkbox" ng-model="porcentaje">
+                                                  <span class="lever"></span>
+                                                  %
+                                                </label>
+                                              </div>
+                                          </th>
+                                        </tr>
+                                      </thead>
+                                      
+                                      <tbody>
+                                          <tr ng-repeat="valor in respuesta track by $index" >
+                                              <td>{{resultadosData.labelsMultiples[$index]}}</td>
+                                              <td  ng-show="porcentaje">{{100*valor/total[key] | number: 2 }}% </td>
+                                              <td  ng-show="!porcentaje">{{valor}}</td>
+                                          </tr>
+                                          <tr>
+                                              <td style="text-align:right" >Total: </td>
+                                              <td ng-show="!porcentaje">{{total[key]}}</td>
+                                              <td ng-show="porcentaje"> 100%</td> 
+                                          </tr>
+                                      </tbody>
+                                    </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div> <!-- CARD TABS -->
+                  </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div ng-show="encuesta.preguntas[preguntaSeleccionada].tipo == 'texto' || (encuesta.preguntas[preguntaSeleccionada].tipo == 'smile' && encuesta.preguntas[preguntaSeleccionada].comentario == true)">
+        <div class="row">
+          <br>
+          <div class="col s12 m10 offset-m1 l8 offset-l2" style="overflow-x: scroll;">
+              <table class="striped" >
+                  <thead>
+                    <tr>
+                        <th>Usuario receptor</th>
+                        <th>Mensaje</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="(key, comentario) in comentarios">
+                      <td>{{comentario.comentario}}</td>
+                      <td>{{comentario.usuario}}</td>
+                    </tr>
+              </tbody>
+            </table>
+            <blockquote ng-show="comentariosNulos > 0">
+                Sin respuesta: {{comentariosNulos}}
+              </blockquote>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="row" ng-show="!mostrarResultados ">
+        <div class=" col s12 m8 offset-m2 l6 offset-l3">
+          <h4 class="center-align grey-text darken-text-1">Selecciona una pregunta distinta o cambia el filtro</h4>
+          <h6 class="center-align grey-text">No hay resultados que mostrar</h6>
+        </div>
+      <div class="row" ng-show="mostrarResultados == true ">
+        <div class="col s12 m10 offset-m1 l8 offset-l2">
+          <blockquote>
+            Los resultados se muestran en tiempo real, tome en cuenta que podrían variar durante su visualización.
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="   white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">Somos más</h5>
+          <ul id='credits'>
+            <li>
+              Proyecto de Somos más
+            </li>
+            <li>
+              Hecho para uso de Somos más y sus clientes filiales.
+            </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Octubre de 2017]</span>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Modal EXCEL -->
+  <div id="exportarExcel" class="modal white modal-fixed-footer">
+      <div class="modal-content ">
+        <div class="topModal green darken-4">
+          <h4>Haz clíc en Exportar</h4>
+           <i class="large material-icons">explicit</i>
+        </div>
+        <p class="center-align"><br>Estás a punto de exportar los datos generales para uso en Excel, estos datos servirán para un análisis mediante tablas dinámicas</p>
+        <div class="row" style="padding:10px;">
+          <div class="col s12">
+              <div style="width:100%; height:200px" id="grid" ui-grid="gridOptions" ui-grid-exporter class="grid scroll4"></div>
+          </div>
+          <div class="">
+            <div class="progress">
+              <div id="progresoExcel" class="determinate green darken-3" style="width: 0%"></div>
+            </div>
+          </div>
+          <button ng-click="exportar()" class="waves-effect waves-light btn green darken-4">Exportar</button>
+        </div>
+      </div>
+      <div class="modal-footer ">
+        <a  class="modal-action modal-close waves-effect waves-green btn green darken-4">Aceptar</a>
+      </div>
+    </div>
+
+  <div id="modalColor" class="modal white">
+    <div class="modal-content">
+      <br>
+      <h4 class="center-align">Ingresa el nuevo color</h4>
+      <div class="row">
+        <div ng-repeat="(i, color) in resultadosData.colors" class="col s12 m8 l6 offset-m2 offset-l3">
+            
+            <input onclick="cargarColorInput(this)" id="ci{{i}}" ng-show="i == selectedColor" ng-model="color" type="text" class="color no-alpha color-slider-respuesta" required>
+            
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <p class="center-align grey-text">Si la ventana de colores no se abre vuelva a dar clic sobre el valor.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+    </div>
+  </div>
+</body>
+<script src="https://www.gstatic.com/firebasejs/4.1.5/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyD0eKSj-KaJaFF2Hz2JVHboOGC3IUkud3Q",
+    authDomain: "surveygtc-d6270.firebaseapp.com",
+    databaseURL: "https://surveygtc-d6270.firebaseio.com",
+    projectId: "surveygtc-d6270",
+    storageBucket: "surveygtc-d6270.appspot.com",
+    messagingSenderId: "1047127218061"
+  };
+  firebase.initializeApp(config);
+</script>
+  <script   src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
+  <!-- Compiled and minified JavaScript -->
+  <!-- EXCEL -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/cpexcel.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/jszip.js"></script>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-touch.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.js"></script>
+  <script src="js/sheet.js"></script>
+  <!-- ui-grid -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-grid/4.0.0/ui-grid.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-grid/4.0.0/ui-grid.css"></script>
+
+	<!-- FileSaver shim for exporting files -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+  <!-- AngularFire -->
+  <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+  <script src="https://cdn.rawgit.com/renatorib/janimate/master/dist/janimate.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+  <script src="js/moment.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>  
+  <script src="js/angularchart.min.js"></script>    
+  <script src="js/color.min.js"></script>
+  <script src="js/pikaday.js"></script>
+  <script src="js/pikaday.jquery.js"></script>
+  <script src="js/initLogin.js"></script>    
+  <script src="js/resultados.js"></script>
+  <script src="js/addWait.js"></script>
+  <script src="js/usuarios.js"></script>
+</html>

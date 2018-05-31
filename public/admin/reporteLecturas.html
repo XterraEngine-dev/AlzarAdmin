@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html ng-app="app" style="overflow-x: hidden;">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Grupo Alzar</title>
+  <!-- Compiled and minified CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Cambios personales -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pikaday.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body ng-controller="ctrl">
+
+  <header>
+    <div class="navbar-fixed">
+      <nav class="white black-text">
+        <div class="nav-wrapper black-text">
+          <a href="index.html" class="brand-logo center black-text">
+            <img src="img/logo.png" height="50px" width="auto"> </a>
+
+          <ul id="nav-mobile" class="left ">
+            <li>
+              <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                <i class="material-icons black-text">menu</i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+  </header>
+  <main class="grey  row lighten-4">
+    <div class="" id="agenciasListado">
+
+      <br>
+      <br>
+      <nav>
+        <div class="nav-wrapper">
+          <div ng-if="userTipo == 'coordinador'" class="col m5 s12">
+            <select class="browser-default black-text" ng-model="condominioSeleccionado" name="condominioSeleccionado" required style="margin-top: 10px"
+              ng-change="cargarCondominio(condominioSeleccionado)">
+              <option value="" disabled selected>Selecciona un condominio</option>
+              <option ng-repeat="(key, condominio) in condominios" value="{{condominio.$id}}">{{condominio.nombre}}</option>
+            </select>
+          </div>
+          <div class="col s2">
+            <button ng-click="cargarCondominio()" class="waves-effect waves-light btn">
+              Cargar
+            </button>
+          </div>
+        </div>
+      </nav>
+      <nav>
+        <div class="nav-wrapper">
+          <form class="row" ng-submit="cargarInicial()">
+
+            <div class="file-field input-field col s2">
+              <div class="btn">
+                <span>Archivo</span>
+                <input id="archivoInicial" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+            </div>
+            <div class="col s2">
+              <button ng-if="condominioSeleccionado && mesSeleccionado && anioSeleccionado" type="submit" class="waves-effect waves-light btn">
+                Cargar Archivo
+              </button>
+            </div>
+            
+            <div class="col m3 s4">
+              <select class="browser-default black-text" ng-model="mesSeleccionado" name="mesSeleccionado" required style="margin-top: 10px">
+                <option value="" disabled selected>Mes</option>
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03">Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </select>
+            </div>
+            <div class="col m2 s3">
+              <select class="browser-default black-text" ng-model="anioSeleccionado" name="anioSeleccionado" required style="margin-top: 10px">
+                <option value="" disabled selected>Año</option>
+                <option ng-repeat="(key, anio) in anios" value="{{anio}}">{{anio}}</option>
+              </select>
+            </div>
+            
+            <div ng-click="checkAll()" class="col s1 waves-effect waves-light center-align">
+              <i style="width: 100%" class="material-icons left">done_all</i>
+            </div>
+            <div ng-click="uncheckAll()" class="col s1 waves-effect waves-light center-align">
+              <i style="width: 100%" class="material-icons left">remove</i>
+            </div>
+            <div class="col s2">
+              <a href="https://drive.google.com/open?id=13J2hgM2ODVJgqsCsKqNjn604uU-ey7ot" target="_blank" ng-if="condominioSeleccionado"
+                class="waves-effect waves-light btn">
+                Plantilla Carga Inicial
+              </a>
+            </div>
+          </form>
+        </div>
+      </nav>
+      <br>
+      <br>
+      <nav>
+        <div class="nav-wrapper">
+          <form>
+            <div class="input-field">
+              <input ng-model-options="{debounce: 1000}" ng-model="search" id="search" type="search" required>
+              <label class="label-icon" for="search">
+                <i class="material-icons">search</i>
+              </label>
+              <i ng-click="borrarSearch()" class="material-icons">close</i>
+            </div>
+          </form>
+        </div>
+      </nav>
+      <div class="tableContainer white">
+        <table class="highlight centered  ">
+          <thead>
+            <tr>
+              <th>Contador Agua</th>
+              <th>Código</th>
+              <th>Correo</th>
+              <th>Consumo (m3)</th>
+              <th>Lectura</th>
+              <th>Lectura Pasada</th>
+              <th>Fecha de Ultima Lectura</th>
+              <th>Ver historial</th>
+              <th>Seleccionar</th>
+            </tr>
+          </thead>
+
+          <tbody ng-if="noCargando">
+            <tr ng-if="res.length" ng-repeat="(i, condominio) in res = ( condominos | filter:search)" class="{{condominio.consumo > condomino.cuota_agua ? 'red lighten-3' : 'white'}}">
+              <td ng-bind="condominio.contador"></td>
+              <td ng-bind="condominio.codigo"></td>
+              <td ng-bind="condominio.correo"></td>
+              <td ng-bind="condominio.consumo"></td>
+              <td ng-bind="condominio.lectura"></td>
+              <td ng-bind="condominio.lectura_pasada"></td>
+              <td ng-bind="condominio.fecha | date:'dd/MM/yyyy HH:MM'"></td>
+              <td>
+                <i ng-click="verHistorial(condominio)" class="red-text center-align material-icons center">history</i>
+              </td>
+              <td>
+                <p>
+                  <input type="checkbox" id="{{condominio.codigo}}" ng-model="condominio.selected" ng-click="check(i, condominio.correo)" />
+                  <label for="{{condominio.codigo}}"></label>
+                </p>
+              </td>
+            </tr>
+            <tr ng-if="!res.length">
+              <td colspan="12">
+                <h5 class="center-align">No hay condominos que mostrar</h5>
+              </td>
+            </tr>
+          </tbody>
+          <tbody ng-if="!noCargando">
+            <tr>
+              <td colspan="12">
+                <div class="preloader-wrapper big active">
+                  <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                      <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                      <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                      <div class="circle"></div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
+  </main>
+
+  <ul id="slide-menu" class="side-nav">
+
+  </ul>
+
+  <!-- Modal Structure -->
+  <div id="modificarModal" class="modal modal-fixed-footer">
+    <form id="modificarForm" name="modificarForm" class=" black-text" ng-submit="modificarUltima(modificarForm.$valid)">
+      <div class="modal-content white">
+        <div class="topModal ">
+          <h4>Modificar valor de lectura</h4>
+          <i class="large material-icons">mode_edit</i>
+        </div>
+        <br>
+        <div class="row">
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="ultima" name="ultima" type="number" class="validate" required="">
+            <label for="ultima">Ultima lectura</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+          <button type="submit" ng-if="modificarForm.$valid" class="waves-effect waves-green btn ">Modificar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div id="modalHistorial" class="modal white">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12">
+          <br>
+          <h4 class="center-align">Historial de lecturas</h4>
+          <p>A continuación se muestra el historial de lecturas de Agua</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <table class="highlight centered  ">
+            <thead>
+              <tr>
+                <th>Consumo</th>
+                <th>Lec. Actual</th>
+                <th>Lec. Anterior</th>
+                <th>Fecha</th>
+                <th>Ver Foto</th>
+                <th>Modificar valor</th>
+              </tr>
+            </thead>
+
+            <tbody id="tablaUsuarios" ng-if="noCargando">
+              <tr ng-if="res.length" ng-repeat="(i, condominio) in res = ( lecturas | filter:search | orderBy:'-fecha')">
+                <td>{{(condominio.lectura - condominio.lectura_pasada)}}</td>
+                <td ng-bind="condominio.lectura"></td>
+                <td ng-bind="condominio.lectura_pasada"></td>
+                <td ng-bind="condominio.fecha | date:'dd/MM/yyyy'"></td>
+                <td ng-click="cargarFoto(condominio)">
+                  <img imageonload src="img/placeholder.png" ng-src="{{condominio.foto}}" alt="" srcset="" height="40px">
+                </td>
+                <td>
+                  <button ng-click="modificarLectura(condominio, i)" class="btn waves-effect">Modificar</button>
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!noCargando">
+              <tr>
+                <td colspan="9">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+    </div>
+  </div>
+  <a ng-if="condominioSeleccionado" ng-click="enviarRecordatorios()" data-position="top" data-delay="50" data-tooltip="Exportar lecturas"
+    class="gray darken-2 btn-floating btn-large waves-effect tooltipped waves-light" style="right: 90px;">
+    <i class="material-icons">email</i>
+  </a>
+  <a ng-if="condominioSeleccionado" ng-click="exportarUsuarios()" data-position="top" data-delay="50" data-tooltip="Exportar lecturas"
+    class="green darken-2 btn-floating btn-large waves-effect tooltipped waves-light">
+    <i class="material-icons">explicit</i>
+  </a>
+
+  <footer class="white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">Grupo Alzar</h5>
+          <ul id='credits'>
+            <li>
+              Proyecto de Grupo Alzar
+            </li>
+            <li>
+              Desarrollado para uso de Grupo Alzar y sus clientes filiales.
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Enero de 2017]</span>
+      </div>
+    </div>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+    authDomain: "alzargt.firebaseapp.com",
+    databaseURL: "https://alzargt.firebaseio.com",
+    projectId: "alzargt",
+    storageBucket: "alzargt.appspot.com",
+    messagingSenderId: "105762378399"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="js/addWait.js"></script>
+<script src="js/reporteLecturas.js"></script>
+<script src="js/usuarios.js"></script>
+<!-- EXCEL -->
+<script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/cpexcel.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/jszip.js"></script>
+
+</html>

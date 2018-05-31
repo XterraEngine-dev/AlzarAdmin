@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Grupo Alzar</title>
+    <!-- Compiled and minified CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Cambios personales -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pikaday.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body ng-controller="ctrl">
+
+    <header>
+        <div class="navbar-fixed">
+            <nav class="white black-text">
+                <div class="nav-wrapper black-text">
+                    <a href="index.html" class="brand-logo center black-text">
+                        <img src="img/logo.png" height="50px" width="auto"> </a>
+
+                    <ul id="nav-mobile" class="left ">
+                        <li>
+                            <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                                <i class="material-icons black-text">menu</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+    </header>
+    <main class="grey lighten-4">
+        <div class="row" id="agenciasListado">
+            <div class="col s12 ">
+                <br>
+                <br>
+                <nav>
+                    <div class="nav-wrapper">
+                        <div class="row">
+                            <div ng-if="userTipo == 'coordinador'" class="col s12">
+                                <select class="browser-default black-text" ng-model="condominioSeleccionado" name="condominioSeleccionado" required style="margin-top: 10px"
+                                    ng-change="cargarCondominio(condominioSeleccionado)">
+                                    <option value="" disabled selected>Selecciona un condominio</option>
+                                    <option ng-repeat="(key, condominio) in condominios" value="{{condominio.$id}}">{{condominio.nombre}}</option>
+                                </select>
+                            </div>
+
+                            <div class="col s2">
+                                <button ng-click="cargarCondominio()" class="waves-effect waves-light btn">
+                                    Cargar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <br>
+                <br>
+                <nav>
+                    <div class="nav-wrapper">
+                        <form>
+                            <div class="input-field">
+                                <input ng-model="search" id="search" type="search" required>
+                                <label class="label-icon" for="search">
+                                    <i class="material-icons">search</i>
+                                </label>
+                                <i ng-click="borrarSearch()" class="material-icons">close</i>
+                            </div>
+                        </form>
+                    </div>
+                </nav>
+                <br>
+                <br>
+                <style>
+                    .mensaje-condomino {
+                        background-color: #039be5;
+                        padding: 10px !important;
+                        border-radius: 10px;
+                        border-bottom-right-radius: 0px;
+                        color: white;
+                        margin: 5px;
+                    }
+
+                    .mensaje-administrador {
+                        background-color: #e0e0e0;
+                        padding: 10px !important;
+                        border-radius: 10px;
+                        border-top-left-radius: 0px;
+                        color: black;
+                        margin: 5px;
+                    }
+                </style>
+                <div class="tableContainer white">
+                    <table class="highlight centered table bordered">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Asunto</th>
+                                <th>Ver mensajes</th>
+                                <th>Archivo</th>
+                                <th>Cerrar</th>
+                            </tr>
+                        </thead>
+                        <tbody ng-repeat="u in data">
+
+                            <tr class="light-gray">
+                                <td colspan="3">Nombre: {{u.nombre}}</td>
+                                <td colspan="2">
+                                    <a class="btn btn-flat waves-effect white-text" ng-click="cargarTickets(u.codigo)">Cargar Tickets</a>
+                                </td>
+                            </tr>
+                            <tr ng-repeat="(i, item) in tickets[u.codigo]">
+                                <td ng-bind="item.fecha | date:'dd/MM/yyyy'"></td>
+                                <td ng-bind="item.asunto"></td>
+                                <td>
+                                    <i ng-click="abrirRespuestas(item, u.codigo)" class="green-text center-align material-icons center">chat</i>
+                                </td>
+                                <td>
+                                    <a href="{{item.archivo}}" target="_blank">{{item.archivo ? 'Abrir' : '-'}}</a>
+                                </td>
+                                <td>
+                                    <i ng-if="item.abierto == true" ng-click="cerrar(item)" class="green-text center-align material-icons center">check_circle</i>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <ul id="slide-menu" class="side-nav">
+
+    </ul>
+    <div id="modalHistorial" class="modal white">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <br>
+                    <h4 class="center-align">Aprobar reserva</h4>
+                    <p>A continuación se muestran los datos del pago de la reserva, corrobora que sean adecuados y aprueba</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <p>
+                        Número de boleta: {{editar.numero_boleta}}
+                        <br> Nombre del banco: {{editar.banco_boleta}}
+                        <br>
+                        <img width="200px" src="{{editar.imagen}}">
+                    </p>
+                </div>
+                <button ng-click="aprobar(true)" class="btn waves-effect">Aprobar</button>
+                <button ng-click="aprobar(false)" class="btn waves-effect">No apruebo</button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+        </div>
+    </div>
+    <div id="modalRespuestas" class="modal white">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <div class="col s12 center-align">
+                        <h5 class="center-align">Respuestas del Ticket</h5>
+                        <p class="center-align">{{editar.descripcion}}</p>
+                    </div>
+                    <div class="col s12">
+                        <div class="row">
+                            <div ng-repeat="r in respuestas" class="col s6 {{r.condomino ? 'offset-s6 mensaje-condomino' : 'mensaje-administrador'}}">
+                                {{r.mensaje}}
+                            </div>
+                            <div ng-if="!respuestas.length" class="col s12">
+                                <h5 class="center-align">Aún no hay mensajes</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="col s12" id="enviarRespuesta" name="enviarRespuesta" ng-submit="crearRespuesta()" class="row">
+                    <div class="input-field col s12">
+                        <textarea placeholder="Escribe un nuevo mensaje" required ng-model="respuesta.mensaje" id="mensaje" class="materialize-textarea"></textarea>
+                        <label for="mensaje">Mensaje</label>
+                    </div>
+                    <div class="col s12">
+                        <button ng-disabled="enviarRespuesta.$invalid" class="btn waves-effect" type="submit">Enviar mensaje</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+        </div>
+    </div>
+    <div id="modalCrearTicket" class="modal white">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <form id="crearForm" name="crearForm" ng-submit="crearTicket()" class="row">
+                        <div class="col s12 center-align">
+                            <h5 class="center-align">Crear Ticket de Soporte</h5>
+                        </div>
+                        <div class="input-field col s12">
+                            <input required id="asunto" type="text" ng-model="new.asunto" class="validate">
+                            <label for="asunto">Asunto</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <textarea required ng-model="new.descripcion" id="descripcion" class="materialize-textarea"></textarea>
+                            <label for="descripcion">Descripción</label>
+                        </div>
+                        <div class=" col s12">
+                            <div class="file-field input-field">
+                                <div class="btn">
+                                    <span>Archivo a adjuntar (opcional)</span>
+                                    <input id="archivo" type="file">
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12">
+                            <button ng-disabled="crearForm.$invalid" class="btn waves-effect" type="submit">Crear ticket</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+        </div>
+    </div>
+
+    <footer class="white-text page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="white-text">Grupo Alzar</h5>
+                    <ul id='credits'>
+                        <li>
+                            Proyecto de Grupo Alzar
+                        </li>
+                        <li>
+                            Desarrollado para uso de Grupo Alzar y sus clientes filiales.
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                <span>Versión 1.0 [Enero de 2017]</span>
+            </div>
+        </div>
+    </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+        authDomain: "alzargt.firebaseapp.com",
+        databaseURL: "https://alzargt.firebaseio.com",
+        projectId: "alzargt",
+        storageBucket: "alzargt.appspot.com",
+        messagingSenderId: "105762378399"
+    };
+    firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="js/addWait.js"></script>
+<script src="js/tickets.js"></script>
+<script src="js/usuarios.js"></script>
+<!-- EXCEL -->
+<script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/cpexcel.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/jszip.js"></script>
+
+</html>

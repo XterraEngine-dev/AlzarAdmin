@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Grupo Alzar</title>
+  <!-- Compiled and minified CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Cambios personales -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pikaday.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="node_modules/angular-bootstrap-colorpicker/css/colorpicker.min.css">
+
+</head>
+
+<body ng-controller="ctrl">
+
+  <header>
+    <div class="navbar-fixed">
+      <nav class="white black-text">
+        <div class="nav-wrapper black-text">
+          <a href="index.html" class="brand-logo center black-text">
+            <img src="img/logo.png" height="50px" width="auto"> </a>
+          <ul id="nav-mobile" class="right black-text">
+            <li>
+              <a class="tooltipped" id="notifications-button" data-position="left" data-delay="50" data-tooltip="Ver notificaciones" data-activates="notifications-slide">
+                <i class="material-icons black-text">notifications</i>
+              </a>
+            </li>
+          </ul>
+          <ul id="nav-mobile" class="left ">
+            <li>
+              <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                <i class="material-icons black-text">menu</i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+  </header>
+  <main class="grey lighten-4">
+    <div class="row" id="agenciasListado">
+      <div class="col s12">
+        
+        <br>
+        <br>
+        <div class="tableContainer white">
+          <table class="highlight centered table ">
+            <thead>
+              <tr>
+                <th>Condominio</th>
+                <th>Nombre</th>
+                <th>Foto</th>
+                <th>Tipo</th>
+                <th>Correo</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+              </tr>
+            </thead>
+
+            <tbody id="tablaUsuarios" ng-if="noCargando">
+              <tr ng-if="res.length" ng-repeat="(i, condominio) in res = ( data | filter:search)">
+                <td ng-bind="condominio.condominio_nombre"></td>
+                <td ng-bind="condominio.nombre"></td>
+                <td>
+                  <img imageonload src="img/placeholder.png" ng-src="{{condominio.foto}}" alt="" srcset="" height="40px">
+                </td>
+                <td ng-bind="condominio.tipo"></td>
+                <td ng-bind="condominio.correo"></td>
+                <td>
+                  <i ng-click="editarModal(i)" class="blue-text center-align material-icons center">edit</i>
+                </td>
+                <td>
+                  <i ng-click="eliminarModal(i)" class="red-text center-align material-icons center">delete</i>
+                </td>
+              </tr>
+              <tr ng-if="!res.length">
+                <td colspan="7">
+                  <h5 class="center-align">No hay usuarios que mostrar</h5>
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!noCargando">
+              <tr>
+                <td colspan="7">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <ul id="slide-menu" class="side-nav">
+
+  </ul>
+
+  <!-- Modal Structure -->
+  <div id="crearModal" class="modal modal-fixed-footer">
+    <form id="crearForm" name="crearForm" class=" black-text" ng-submit="crear(crearForm.$valid)">
+      <div class="modal-content white">
+        <div class="topModal ">
+          <h4>Crear un Usuario</h4>
+          <i class="large material-icons">account_circle</i>
+        </div>
+        <br>
+        <div class="row">
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.nombre" id="nombre" name="nombre" type="text" class="validate" required="">
+            <label for="nombre">Nombre para el usuario</label>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <select ng-model="new.tipo" name="pais" required style="margin-top: 10px" class="browser-default">
+              <option value="" disabled selected>Selecciona el tipo de usuario</option>
+              <option value="coordinador">Coordinador</option>
+              <option value="administrador">Administrador</option>
+            </select>
+          </div>
+          <div ng-if="new.tipo == 'administrador'" class="col s10 offset-s1 m8 offset-m2">
+            <select ng-model="new.condominio" name="pais" required style="margin-top: 10px" class="browser-default">
+              <option value="" disabled selected>Selecciona un condominio</option>
+              <option ng-repeat="(key, condominio) in condominios" value="{{condominio.$id}}">{{condominio.nombre}}</option>
+            </select>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.correo" id="correo" name="correo" type="email" class="validate" required="">
+            <label for="correo">Correo del usuario</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.contrasena" id="contrasena" name="contrasena" type="password" class="validate" required="">
+            <label for="contrasena">Contraseña del usuario</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Foto del usuario</span>
+                <input accept="image/*" id="foto" name="foto" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+              <div class="col s12 center-align">
+                <img width="80px" style="object-fit: cover;" src="img/placeholder.png" ng-src="{{new.foto}}" id="imgPreview">
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3 blue-text text-darken-3">
+            <div class="progress">
+              <div id="progresoFile" class="determinate" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="col s10 offset-s1" style="height: 120px;">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+        <button type="submit" class="waves-effect waves-green     btn ">Aceptar</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="editarModal" class="modal modal-fixed-footer">
+    <form id="editarForm" name="editarForm" class=" black-text" ng-submit="guardar(editarForm.$valid)">
+      <div class="modal-content white">
+        <div class="topModal ">
+          <h4>Editar un Usuario</h4>
+          <i class="large material-icons">mode_edit</i>
+        </div>
+        <br>
+        <div class="row">
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.nombre" name="nombre" type="text" class="validate" required="">
+            <label for="nombre">Nombre para el usuario</label>
+          </div>
+
+          <div class=" col s10 offset-s1 m8 offset-m2 ">
+            <select ng-model="editar.tipo" name="pais" required style="margin-top: 10px" class="browser-default">
+              <option value="" disabled selected>Selecciona el tipo de usuario</option>
+              <option value="coordinador">Coordinador</option>
+              <option value="administrador">Administrador</option>
+            </select>
+          </div>
+          <div ng-if="editar.tipo == 'administrador'" class="col s10 offset-s1 m8 offset-m2">
+            <select ng-model="editar.condominio" name="pais" required style="margin-top: 10px" class="browser-default">
+              <option value="" disabled selected>Selecciona un condominio</option>
+              <option ng-repeat="(key, condominio) in condominios" value="{{condominio.$id}}">{{condominio.nombre}}</option>
+            </select>
+          </div>
+
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input disabled ng-model="editar.correo" name="correo" type="email" class="validate" required="">
+            <label for="correo">Correo del usuario</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input disabled ng-model="editar.contrasena" name="contrasena" type="password" class="validate" required="">
+            <label  for="contrasena">Contraseña del usuario</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Foto del usuario</span>
+                <input accept="image/*" id="fotoE" name="foto" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+              <div class="col s12 center-align">
+                <img width="80px" style="object-fit: cover;" src="img/placeholder.png" ng-src="{{new.foto}}" id="imgPreviewE">
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3 blue-text text-darken-3">
+            <div class="progress">
+              <div id="progresoFileE" class="determinate" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="col s12 center-align">
+            <button ng-click="cambiarLogo()" id="sendDiv" class="waves-effect waves-green btn ">Cambiar logo</button>
+          </div>
+          <div class="col s10 offset-s1" style="height: 120px;">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+        <button type="submit" class="waves-effect waves-green btn ">Guardar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Structure ELIMINAR -->
+  <div id="eliminarModal" class="modal white">
+    <div class="modal-content ">
+      <div class="topModal deep-orange darken-3">
+        <h4>Eliminar el Condominio seleccionado</h4>
+        <i class="large material-icons">delete</i>
+      </div>
+      <h5 class="center-align">
+        <br>
+        <br> Haz clíc en Aceptar para confirmar que deseas eliminar el Condominio
+        <br>
+        <br> </h5>
+    </div>
+    <div class="modal-footer white">
+      <a class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+      <a ng-click="eliminar()" class="waves-effect waves-green btn deep-orange darken-3">Aceptar</a>
+    </div>
+  </div>
+
+
+  <a id="anadirEncuesta" data-position="top" href="#crearModal" data-delay="50" data-tooltip="Añadir usuario" class=" btn-floating btn-large waves-effect tooltipped waves-light modal-trigger">
+    <i class="material-icons">add</i>
+  </a>
+  <footer class="   white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">Grupo Alzar</h5>
+          <ul id='credits'>
+            <li>
+              Proyecto de Grupo Alzar
+            </li>
+            <li>
+              Desarrollado para uso de Grupo Alzar y sus clientes filiales.
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Enero de 2017]</span>
+      </div>
+    </div>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+    authDomain: "alzargt.firebaseapp.com",
+    databaseURL: "https://alzargt.firebaseio.com",
+    projectId: "alzargt",
+    storageBucket: "alzargt.appspot.com",
+    messagingSenderId: "105762378399"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="js/addWait.js"></script>
+<script src="js/usuariosAdmin.js"></script>
+<script src="js/usuarios.js"></script>
+
+</html>

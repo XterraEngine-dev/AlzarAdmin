@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html >
+<head>
+<meta charset="UTF-8">
+<title>Somos más [Inicio de sesión]</title>  
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+<!--Import Google Icon Font-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!-- Cambios personales -->
+<link rel="stylesheet" href="css/style.css">  
+<link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+<link rel="stylesheet" href="css/materialize-stepper.min.css">
+</head>
+<body>
+  
+    
+  <main>
+    <style>
+      .error{ 
+        margin-top: 40px;
+        margin-bottom: 40px;
+      }
+      .tab.col.s3 {
+        background-color: #222;
+      }
+      .tabs .tab a:hover, .tabs .tab a.active {
+          background-color:transparent;
+          color:#fff;
+      }
+      .tabs .tab a:hover, .tabs .tab a {
+          background-color:transparent;
+          color:#ccc;
+      }
+      .step-title.waves-effect {
+          text-align: right;
+      }
+      .out{
+        /* Firefox */
+        display:-moz-box;
+        -moz-box-pack:center;
+        -moz-box-align:center;
+
+        /* Safari and Chrome */
+        display:-webkit-box;
+        -webkit-box-pack:center;
+        -webkit-box-align:center;
+
+        /* W3C */
+        display:box;
+        box-pack:center;
+        box-align:center;
+      }
+      .rounded{
+        border-radius: 15px;
+        overflow:hidden;
+      }
+      #loginCard {
+        margin: 0;
+        padding: 0;
+        border-radius: 15px;
+      }
+</style>
+
+    <div class="row center-align out" style="height:100vh !important">
+        <div id="loginCard"  align="center" class="card hovereable col s10 m6 l4 offset-s1 offset-m3 offset-l4 center-align rounded" >
+          <div class="center-align">
+            <ul class="tabs tabs-fixed-width">
+              <li class="tab col s3"><a class="logIn" href="#logIn">Iniciar sesión</a></li>
+              <li class="tab col s3"><a href="#signIn">Registrarse</a></li>
+            </ul>
+            <div id="logIn">
+              <h4 id="title">Iniciar sesión</h4>
+              <form id="logInForm" class="cmxform col s12 m10 l10 offset-l1 offset-m1" method="get" action="">
+                <div class="row">
+                  <div id="userDiv" class="input-field col s12">
+                    <input name="user" placeholder="usuario@correo.com" class="validate" id="user" type="email" required="">
+                    <label for="user">Usuario</label>
+                  </div>
+                  <div id="passwordDiv" class="input-field col s12">
+                    <input placeholder="contraseña del usuario" id="password" name="password" type="password" class="validate" required="">
+                    <label minlength="6" for="password">Contraseña</label>
+                  </div>
+                  <button type="submit" style="margin-top: 60px; margin-bottom: 40px;" id="sendDiv" class="waves-effect waves-light btn grey darken-4 submit"><i class="material-icons right" id="sendI">send</i>Iniciar sesión</button>
+                  <br>
+                </div>
+              </form>
+              <button onclick="olvide()" style="margin-top: 60px; margin-bottom: 40px;" id="sendDiv" class="waves-effect waves-light btn-flat grey-text white submit"><i class="material-icons right" id="sendI">send</i>Olvide mi contraseña</button>
+            </div>
+          <!-- FORMULARIO DE REGISTRO -->
+              <div id="signIn" >
+                <h4 id="title">Registrarse</h4>
+                <form id="signInForm" class="cmxform col s12 m10 l10 offset-l1 offset-m1" method="get" action="">
+                  <div class="row">
+                    <div id="firstStep">
+                        <div class="input-field col s8 offset-s2 ">
+                          <input id="codigoEmpresa" name="codigoEmpresa" type="text" minlength="6" maxlength="6" class="validate" required>
+                          <label for="codigoEmpresa">Código de seguridad</label>
+                        </div>
+                        <div class="step-actions">
+                          <button onclick="verificarCodigoEmpresa()" class="waves-effect waves-dark btn next-step blue">Continuar</button>
+                        </div>
+                    </div>
+                    <div id="nextStep" style="display: none">
+                        <br>
+                        <div class="chip">
+                          <img id="logoEmpresa" src="">
+                          <span id="nombreEmpresa"></span>
+                        </div><br><br>
+                          <div class="input-field col s12">
+                            <input id="emailE" name="emailE" type="email" class="validate" required>
+                            <label for="emailE">Tu correo electrónico</label>
+                          </div>
+                          <div class="input-field col s12">
+                            <input id="passwordE" name="passwordE" type="password" class="validate" required>
+                            <label for="passwordE">Tu contraseña</label>
+                          </div>
+                          <div class="divider"></div>
+                          <div class="input-field col s12">
+                            <input placeholder="Ejemplo: María" id="nombre" name="nombre" type="text" class="validate" required>
+                            <label for="nombre">Nombres</label>
+                          </div>
+                          <div class="input-field col s12">
+                            <input placeholder="Ejemplo: Lopez" id="apellido" name="apellido" type="text" class="validate" required>
+                            <label for="apellido">Apellidos</label>
+                          </div>
+                          <div class="input-field col s12">
+                            <select id="sexo" name="sexo" required>
+                              <option value="" disabled selected>Selecciona tu sexo</option>
+                              <option value="MASCULINO">Masculino</option>
+                              <option value="FEMENINO">Femenino</option>
+                            </select>
+                            <label for="sexo">Sexo</label>
+                          </div>
+                          <div class="input-field col s12">
+                            <input id="edad" name="edad" placeholder="24" type="number" min="18" max="99" class="validate" required>
+                            <label for="edad">Edad</label>
+                          </div>  
+                          <div class="input-field col s12">
+                            <input id="dpi" name="dpi" placeholder="2144892040303" type="number" class="validate" required>
+                            <label for="dpi">DPI (Código único de identificación)</label>
+                          </div>
+                          <br><br>
+                          <span>Por favor, selecciona correctamente tu sucursal</span>  
+                          <div class="input-field col s12">
+                            <select id="sucursal" name="sucursal" required>
+                              <option value="" disabled selected>Selecciona tu sucursal</option>
+                            </select>
+                            <label for="sucursal">Sucursal</label>
+                          </div>
+                          <div class="input-field col s12">
+                            <button class="waves-effect waves-dark btn blue" type="submit">Registrar</button>
+                          </div>
+                        </div>
+                  </div>
+                </form>
+              </div>
+              <!-- FORMULARIO DE REGISTRO -->
+          </div>
+        </div>
+        
+    </div>
+
+  </main>
+
+</body>
+  <script src="https://www.gstatic.com/firebasejs/4.1.5/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyD0eKSj-KaJaFF2Hz2JVHboOGC3IUkud3Q",
+      authDomain: "surveygtc-d6270.firebaseapp.com",
+      databaseURL: "https://surveygtc-d6270.firebaseio.com",
+      projectId: "surveygtc-d6270",
+      storageBucket: "surveygtc-d6270.appspot.com",
+      messagingSenderId: "1047127218061"
+    };
+    firebase.initializeApp(config);
+  </script>
+  <script   src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+  <script src="https://cdn.rawgit.com/renatorib/janimate/master/dist/janimate.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+  <script src="js/materialize-stepper.min.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/codigoEmpresa.js"></script>
+  <script src="js/addWait.js"></script>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Grupo Alzar</title>
+  <!-- Compiled and minified CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Cambios personales -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pikaday.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body ng-controller="ctrl">
+
+  <header>
+    <div class="navbar-fixed">
+      <nav class="white black-text">
+        <div class="nav-wrapper black-text">
+          <a href="index.html" class="brand-logo center black-text">
+            <img src="img/logo.png" height="50px" width="auto"> </a>
+
+          <ul id="nav-mobile" class="left ">
+            <li>
+              <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                <i class="material-icons black-text">menu</i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+  </header>
+  <main class="grey lighten-4">
+    <div class="row" id="agenciasListado">
+      <div class="col s12 ">
+        <br>
+        <br>
+        <nav>
+          <div class="nav-wrapper">
+            <div ng-if="userTipo == 'coordinador'" class="col s10">
+              <select class="browser-default black-text" ng-model="condominioSeleccionado" name="condominioSeleccionado" required style="margin-top: 10px"
+                ng-change="cargarCondominio(condominioSeleccionado)">
+                <option value="" disabled selected>Selecciona un condominio</option>
+                <option ng-repeat="(key, condominio) in condominios" value="{{condominio.$id}}">{{condominio.nombre}}</option>
+              </select>
+            </div>
+            <div ng-click="checkAll()" class="col s1 waves-effect waves-light center-align">
+              <i style="width: 100%" class="material-icons left">done_all</i>
+            </div>
+            <div ng-click="uncheckAll()" class="col s1 waves-effect waves-light center-align">
+              <i style="width: 100%" class="material-icons left">remove</i>
+            </div>
+          </div>
+        </nav>
+        <br>
+        <br>
+        <div class="tableContainer white">
+          <table class="highlight centered ">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Correo</th>
+                <th>Seleccionar</th>
+              </tr>
+            </thead>
+
+            <tbody id="tablaUsuarios" ng-if="noCargando">
+              <tr ng-if="res.length" ng-repeat="(i, condominio) in res = ( data | filter:search)">
+                <td ng-bind="condominio.codigo"></td>
+                <td ng-bind="condominio.correo"></td>
+                <td>
+                  <p>
+                    <input type="checkbox" id="{{condominio.codigo}}" ng-model="condominio.selected" ng-click="check(i, condominio.correo)" />
+                    <label for="{{condominio.codigo}}"></label>
+                  </p>
+                </td>
+              </tr>
+              <tr ng-if="!res.length">
+                <td colspan="3">
+                  <h5 class="center-align">No hay condominos que mostrar</h5>
+                </td>
+              </tr>
+            </tbody>
+            <tbody ng-if="!noCargando">
+              <tr>
+                <td colspan="9">
+                  <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <ul id="slide-menu" class="side-nav">
+
+  </ul>
+  <div id="mensajeModal" class="modal white">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12">
+          <br>
+          <h4 class="center-align">Mensaje de difusión</h4>
+          <p class="center-align">Ingrese los datos para el mensaje de difusión</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <form ng-submit="">
+            <div class="input-field col s12">
+              <input required placeholder="Se verá como asunto en el correo electrónico" ng-model="m.titulo" id="titulo" type="text" class="validate">
+              <label for="titulo">Título</label>
+            </div>
+            <div class="input-field col s12">
+              <textarea required ng-model="m.mensaje" id="mensaje" placeholder="Es el cuerpo del mensaje" class="materialize-textarea"></textarea>
+              <label for="mensaje">Mensaje</label>
+            </div>
+            <div class="col s9">
+              <div class="file-field input-field">
+                <div class="btn">
+                  <span>Archivo</span>
+                  <input id="archivo" type="file">
+                </div>
+                <div class="file-path-wrapper">
+                  <input class="file-path validate" type="text">
+                </div>
+              </div>
+            </div>
+            <div class="col s3">
+              <a ng-click="subirArchivo()" class="waves-effect waves-light btn">Subir archivo</a>
+            </div>
+            <div class="col s12 blue-text text-darken-3">
+              <div class="progress">
+                <div id="progreso" class="determinate blue" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="col s12">
+              <small>Este archivo se adjuntará en el correo electrónico</small>
+            </div>
+            <div class="input-field col s12">
+              <input disabled required ng-model="m.archivo" id="url" type="url" class="validate">
+              <label class="active" for="titulo">URL del Archivo</label>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button ng-disabled="!m.titulo || !m.mensaje" ng-click="enviarMensaje()" class=" waves-effect waves-green btn">Enviar</button>
+      <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+    </div>
+  </div>
+  <a ng-if="condominioSeleccionado && seleccionados.length" href="#mensajeModal" data-position="top" data-delay="50" data-tooltip="Mensaje de difusión"
+    class="gray darken-2 btn-floating btn-large waves-effect tooltipped waves-light modal-trigger">
+    <i class="material-icons">email</i>
+  </a>
+
+  <footer class="white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">Grupo Alzar</h5>
+          <ul id='credits'>
+            <li>
+              Proyecto de Grupo Alzar
+            </li>
+            <li>
+              Desarrollado para uso de Grupo Alzar y sus clientes filiales.
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Enero de 2017]</span>
+      </div>
+    </div>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+    authDomain: "alzargt.firebaseapp.com",
+    databaseURL: "https://alzargt.firebaseio.com",
+    projectId: "alzargt",
+    storageBucket: "alzargt.appspot.com",
+    messagingSenderId: "105762378399"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="js/addWait.js"></script>
+<script src="js/mensajesDifusion.js"></script>
+<script src="js/usuarios.js"></script>
+
+</html>

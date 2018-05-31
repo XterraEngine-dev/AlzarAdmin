@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es" ng-app="app">
+
+<head>
+    <meta charset="utf-8">
+    <title>Reserva del uso de Amenidades y Salones Sociales</title>
+    <link rel="stylesheet" href="css/formulario.css" media="all" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+            authDomain: "alzargt.firebaseapp.com",
+            databaseURL: "https://alzargt.firebaseio.com",
+            projectId: "alzargt",
+            storageBucket: "alzargt.appspot.com",
+            messagingSenderId: "105762378399"
+        };
+        firebase.initializeApp(config);
+    </script>
+
+    <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="js/formulario.js"></script>
+</head>
+
+<body ng-controller="ctrl">
+    <header class="clearfix">
+        <div id="logo">
+            <img ng-src="{{data.logo_condominio}}" src="">
+        </div>
+        <p>Guatemala, {{data.fecha | date:'dd/MM/yyyy'}}</p>
+        <br>
+        <h1>{{data.nombre_condominio}}</h1>
+        <h2>Amenidad: {{data.nombre_amenidad}}</h2>
+        <div id="project">
+
+            <div>
+                <span>Nombre</span> {{data.nombre_condomino}}</div>
+            <div>
+                <span>No. Residencia</span> {{data.codigo_condomino}}</div>
+            <div>
+                <span>Teléfono</span> {{data.telefono_condomino}}</div>
+            <div>
+                <span>Correo</span> {{data.correo_condomino}}
+            </div>
+
+
+
+            <div class="line"></div>
+            <div>
+                <span>Fecha del evento</span> {{data.fecha_seleccionada | date:'dd/MM/yyyy'}}</div>
+            <div>
+                <span>Descripción</span> {{data.descripcion | limitTo:30}}</div>
+            <div class="line"></div>
+            <div>
+                <span>No. De Invitados </span> {{data.numero_invitados}}</div>
+
+    </header>
+    <main>
+        <h3>Detalle de horarios y costos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th class="service">HORARIO</th>
+                    <th>COSTO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="horario in data.costos">
+                    <td class="service">{{horario.horario}}</td>
+                    <td class="desc">{{horario.costo | currency:'Q '}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="grand total">Total: {{data.total | currency: 'Q '}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div ng-if="data.observaciones" id="notices">
+            <div>Observaciones:</div>
+            <div class="notice">{{data.observaciones}}</div>
+        </div>
+    </main>
+    <header class="clearfix">
+
+        <br>
+        <h1>Condiciones de uso</h1>
+        <div id="project">
+            <div id="condiciones_uso">
+            </div>
+            <div class="firma">
+                Firma de aceptado del residente responsable
+            </div>
+            <br>
+            <br>
+            <br>
+        </div>
+    </header>
+    <main>
+        <h3>Detalle depósito</h3>
+        <small>(Llenado por administración)</small>
+        <table class="condiciones">
+            <tbody>
+                <tr>
+                    <td>No. de depósito o transacción</td>
+                    <td class="condicion_left">{{data.numero_boleta}} del Bancho: {{data.boleta}}</td>
+                </tr>
+                <tr>
+                    <td>Fecha del depósito</td>
+                    <td class="condicion_left">{{data.fecha_deposito | date:"dd/MM/yyyy"}}</td>
+                </tr>
+                <tr>
+                    <td>No. Factura</td>
+                    <td class="condicion_left"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="condiciones">
+            <tbody>
+                <tr>
+                    <td>Monto del depósito en Garantía</td>
+                    <td class="condicion_left">{{data.deposito}}</td>
+                </tr>
+                <tr class="separator">
+                    <td colspan="2">
+                        Devolución del cheque en garantía (Cuando aplique)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Nombre de quien recibe</td>
+                    <td style="padding: 30px;" class="condicion_left"></td>
+                </tr>
+                <tr>
+                    <td>Firma</td>
+                    <td style="padding: 30px;" class="condicion_left"></td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</body>
+
+</html>

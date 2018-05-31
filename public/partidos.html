@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Somos más</title>
+  <!-- Compiled and minified CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Cambios personales -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pikaday.css">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+  <link rel="stylesheet" href="css/materialize-stepper.min.css">
+  <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+</head>
+
+<body ng-controller="ctrl">
+  <style>
+    .error {
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+
+    .select-wrapper input.select-dropdown {
+      border: none;
+
+    }
+
+    .especialM {
+      float: left;
+      position: relative;
+      left: 50%;
+    }
+
+    .especial {
+      float: left;
+      position: relative;
+      left: -50%;
+    }
+
+    .material-icons {
+      cursor: pointer;
+    }
+
+    .cp-color-picker {
+      z-index: 10000;
+    }
+  </style>
+  <ul style="z-index: 9000" id="slide-out" class="side-nav">
+
+  </ul>
+  <ul id="notifications-slide" class="side-nav">
+
+  </ul>
+
+
+  <header>
+    <div class="navbar-fixed">
+      <nav class="white black-text">
+        <div class="nav-wrapper black-text">
+          <a href="index.html" class="brand-logo center black-text">
+            <img src="img/logo.png" height="60px" width="auto"> </a>
+          <ul id="nav-mobile" class="right black-text">
+            <li>
+              <a class="tooltipped" id="notifications-button" data-position="left" data-delay="50" data-tooltip="Ver notificaciones" data-activates="notifications-slide">
+                <i class="material-icons black-text">notifications</i>
+              </a>
+            </li>
+          </ul>
+          <ul id="nav-mobile" class="left ">
+            <li>
+              <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-out" id="menu-button" class="tooltipped">
+                <i class="material-icons black-text">menu</i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+  <!-- Dropdown Structure -->
+  <ul id="paisesDropdown" class="dropdown-content">
+    <li ng-repeat="(key, pais) in paises">
+      <a ng-click="cargarPais(pais.nombre)">{{pais.nombre}}</a>
+    </li>
+  </ul>
+  <main class="grey lighten-5">
+    <div class="container">
+      <h2>
+        Partidos
+      </h2>
+    </div>
+    <div class="container">
+      <div class="section">
+        <div ng-if="loaded === false" id="pre" class="preloader-wrapper big active">
+          <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <nav class="  ">
+            <div class="nav-wrapper">
+              <a href="#!" class="brand-logo truncate hide-on-med-and-down">
+                <i style="margin-left: 75px" class="material-icons">business</i>Partidos</a>
+              <ul class="right">
+                <li>
+                  <a class="dropdown-button" href="#!" data-activates="paisesDropdown">País
+                    <i class="material-icons right">arrow_drop_down</i>
+                  </a>
+                </li>
+                <li>
+                  <div class="center row">
+                    <div class="col s12 ">
+                      <div class="row" id="topbarsearch">
+                        <div class="input-field col s6 s12 white-text">
+                          <i class="white-text material-icons prefix">search</i>
+                          <input ng-model="search" id="search" type="text" placeholder="buscar" class=" white-text">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <a href="#crearPartidoModal" class="modal-trigger waves-effect btn-flat white-text waves-light">
+                    <span class="hide-on-small-only">Añadir partido</span>
+                    <i class="material-icons">add</i>
+                  </a>
+                </li>
+
+              </ul>
+
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="container white" style=" margin-top: -1.5rem;">
+      <div class="section ">
+        <div class="row" id="agenciasListado">
+          <div class="col s12">
+            <div class="tableContainer">
+              <table class="highlight centered table ">
+                <thead>
+                  <tr>
+                    <th>Correo</th>
+                    <th>Contraseña inicial</th>
+                    <th>Nombre</th>
+                    <th>Logo</th>
+                    <th>Color primario</th>
+                    <th>Color secundario</th>
+                    <th>Candidatos</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr ng-repeat="(key, partido) in arrData = (data | filter: search)">
+                    <td>{{partido.correo}}</td>
+                    <td>{{partido.contrasena}}</td>
+                    <td>{{partido.nombre}}</td>
+                    <td>
+                      <img imageonload ng-src="{{partido.imagen}}" alt="{{partido.nombre}}" width="40px" height="auto">
+                    </td>
+                    <td>{{partido.color_primario || "-"}}</td>
+                    <td>{{partido.color_secundario}}</td>
+                    <td>
+                      <a href="candidatos.html?puid={{partido.$id}}" target="_blank" class="btn-floating btn-floating-no  blue">
+
+                        <i class="large material-icons">people</i>
+                      </a>
+                    </td>
+                    <td>
+                      <a ng-click="editarPartido(key)" class="btn-floating btn-floating-no  green">
+
+                        <i class="large material-icons">edit</i>
+                      </a>
+                    </td>
+                    <td>
+                      <a ng-click="eliminarPartido(key)" class="btn-floating btn-floating-no  red">
+
+                        <i class="large material-icons">delete</i>
+                      </a>
+                    </td>
+                  </tr>
+                  <tr ng-if="!arrData.length">
+                    <td colspan="9">
+                      <h5 class="grey-text center-align">
+                        No hay datos que mostrar
+                      </h5>
+                    </td>
+
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <br>
+  </main>
+
+  <!-- Modal Structure -->
+  <div id="crearPartidoModal" class="modal modal-fixed-footer">
+    <form id="crearPartidoForm" name="crearPartidoForm" ng-submit="crearPartido(crearPartidoForm.$valid)" class=" black-text">
+      <div class="modal-content white">
+        <div class="topModal    ">
+          <h4>Crear un Partido</h4>
+          <i class="large material-icons">business</i>
+        </div>
+        <br>
+        <div class="row">
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.correo" id="correo" name="correo" type="email" class="validate" required="">
+            <label for="correo">Correo del usuario partido</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.contrasena" id="contrasena" name="contrasena" type="password" minlength="6" class="validate" required="">
+            <label for="contrasena">Contraseña del usuario partido</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.nombre_usuario" id="nombre_usuario" name="nombre_usuario" type="text" class="validate" required="">
+            <label for="nombre_usuario">Nombre completo del usuario partido</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="new.nombre" id="nombre" name="nombre" type="text" class="validate" required="">
+            <label for="nombre">Nombre del partido</label>
+          </div>
+          <div class="input-field col col s10 offset-s1 m8 offset-m2">
+            <textarea ng-model="new.historia_partido" placeholder="Historia del partido" required class="materialize-textarea"></textarea>
+          </div>
+          <div class="col col s10 offset-s1 m8 offset-m2">
+            <select ng-model="new.pais" id="pais" name="pais" required style="margin-top: 10px" class="browser-default">
+              <option value="" disabled selected>Selecciona un país</option>
+              <option ng-repeat="(key, pais) in paises" value="{{pais.nombre}}">{{pais.nombre}}</option>
+            </select>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Logotipo del partido</span>
+                <input required="" accept="image/*" id="imagen" name="imagen" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+              <div class="col s12 center-align">
+                <img width="120px" ng-src="{{new.imagen}}" id="imgPreview">
+              </div>
+            </div>
+          </div>
+          <div class="col s12 blue-text text-darken-3">
+            <div class="progress">
+              <div id="progresoFile" class="determinate blue" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input name="color_primario" id="color_primario" my-two-way-bind="new.color_primario" inputcolor type="text" class="color no-alpha color-slider-respuesta"
+              style="background-color: rgb(0, 0, 0); color: rgb(221, 221, 221);" required>
+            <label for="color_primario">Color de fondo</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input name="color_secundario" inputcolor my-two-way-bind="new.color_secundario" id="color_secundario" inputcolor type="text"
+              class="color no-alpha color-slider-respuesta" style="background-color: rgb(0, 0, 0); color: rgb(221, 221, 221);"
+              required>
+            <label for="color_secundario">Color secundario</label>
+          </div>
+          <div class="col s10 offset-s1" style="height: 120px;">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+        <button ng-disabled="crearPartidoForm.$invalid" type="submit" id="sendDiv" class="waves-effect waves-green btn ">Crear partido</button>
+      </div>
+    </form>
+  </div>
+  <div id="editarPartidoModal" class="modal modal-fixed-footer">
+    <form id="editarPartidoForm" name="editarPartidoForm" ng-submit="guardarPartido(editarPartidoForm.$valid)" class=" black-text">
+      <div class="modal-content white">
+        <div class="topModal    ">
+          <h4>Editar un Partido</h4>
+          <i class="large material-icons">business</i>
+        </div>
+        <br>
+        <div class="row">
+          <div class="input-field col s10 offset-s1 m8 offset-m2 ">
+            <input ng-model="editar.nombre" id="nombre" name="nombre" type="text" class="validate" required="">
+            <label for="nombre">Nombre del partido</label>
+          </div>
+
+          <div class="input-field col col s10 offset-s1 m8 offset-m2">
+            <textarea ng-model="editar.historia_partido" placeholder="Historia del partido" required class="materialize-textarea"></textarea>
+          </div>
+
+          <div class="col col s10 offset-s1 m8 offset-m2">
+            <select ng-model="editar.pais" id="pais" name="pais" required style="margin-top: 10px" class="browser-default">
+              <option value="" disabled selected>Selecciona un país</option>
+              <option ng-repeat="(key, pais) in paises" value="{{pais.nombre}}">{{pais.nombre}}</option>
+            </select>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <div class="file-field input-field ">
+              <div class="btn black">
+                <span class="">Logotipo del partido</span>
+                <input accept="image/*" id="imagenE" name="imagen" type="file">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+              <div class="col s12 center-align">
+                <img width="120px" ng-src="{{editar.imagen}}" id="imgPreviewE">
+              </div>
+            </div>
+          </div>
+          <div class="col s6 offset-s3 blue-text text-darken-3">
+            <div class="progress">
+              <div id="progresoFileE" class="determinate" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="col s12 center-align">
+            <a ng-click="cambiarFoto(editar.$id)" class="btn black white-text waves-effect">
+              Cambiar foto
+            </a>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input name="color_primario" id="color_primario" my-two-way-bind="editar.color_primario" ng-model="editar.color_primario"
+              inputcolor type="text" class="color no-alpha color-slider-respuesta" style="background-color: rgb(0, 0, 0); color: rgb(221, 221, 221);"
+              required>
+            <label for="color_primario">Color de fondo</label>
+          </div>
+          <div class="input-field col s10 offset-s1 m8 offset-m2">
+            <input name="color_secundario" inputcolor my-two-way-bind="editar.color_secundario" ng-model="editar.color_secundario" id="color_secundario"
+              inputcolor type="text" class="color no-alpha color-slider-respuesta" style="background-color: rgb(0, 0, 0); color: rgb(221, 221, 221);"
+              required>
+            <label for="color_secundario">Color secundario</label>
+          </div>
+          <div class="col s10 offset-s1" style="height: 120px;">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cerrar</a>
+        <button ng-disabled="editarPartidoForm.$invalid" type="submit" id="sendDiv" class="waves-effect waves-green btn ">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+
+  <footer class="   white-text page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="white-text">Somos más</h5>
+          <ul id='credits'>
+            <li>
+              Proyecto de Somos más
+            </li>
+            <li>
+              Hecho para uso de Somos más y sus clientes filiales.
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <span>Versión 1.0 [Octubre de 2017]</span>
+      </div>
+    </div>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyD_Fb9LnnBbRcsB5QV-BmmA-bMM8gLbB9s",
+    authDomain: "somos-mas-gt.firebaseapp.com",
+    databaseURL: "https://somos-mas-gt.firebaseio.com",
+    projectId: "somos-mas-gt",
+    storageBucket: "somos-mas-gt.appspot.com",
+    messagingSenderId: "376543751718"
+  };
+  firebase.initializeApp(config);
+</script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+<script src="https://cdn.rawgit.com/renatorib/janimate/master/dist/janimate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+<script src="js/color.min.js"></script>
+<script src="js/moment.js"></script>
+<script src="js/pikaday.js"></script>
+<script src="js/pikaday.jquery.js"></script>
+<script src="js/initLogin.js"></script>
+<script src="js/partidos.js"></script>
+<script src="js/addWait.js"></script>
+<script src="js/usuarios.js"></script>
+
+</html>

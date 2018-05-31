@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html ng-app="app" ng-controller="ctrl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{condominio_nombre}} | Grupo Alzar</title>
+    <!-- Compiled and minified CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Cambios personales -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pikaday.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body>
+
+    <header>
+        <div class="navbar-fixed">
+            <nav class="white black-text">
+                <div class="nav-wrapper black-text">
+                    <a href="index.html" class="brand-logo center black-text">
+                        <img src="img/logo.png" ng-src="{{condominio_data.logo}}" height="50px" width="auto" alt="{{condominio_data.nombre}}"> </a>
+
+                    <ul id="nav-mobile" class="left ">
+                        <li>
+                            <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                                <i class="material-icons black-text">menu</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+    </header>
+    <main ng-cloak class="grey lighten-4">
+        <div class="row" id="agenciasListado">
+            <div class="col s12 ">
+                <br>
+                <h2>Servicio de atención al condomino</h2>
+                <br>
+                <nav>
+                    <div class="nav-wrapper">
+                        <form>
+                            <div class="input-field">
+                                <input ng-model="search" id="search" type="search" required>
+                                <label class="label-icon" for="search">
+                                    <i class="material-icons">search</i>
+                                </label>
+                                <i ng-click="borrarSearch()" class="material-icons">close</i>
+                            </div>
+                        </form>
+                    </div>
+                </nav>
+                <div class="col s12">
+                    <br>
+                    <br>
+                    <div class="row white z-depth-1">
+                        <table class="centered">
+                            <thead>
+                                <tr>
+                                    <th>Ticket</th>
+                                    <th>Fecha</th>
+                                    <th>Asunto</th>
+                                    <th>Archivo</th>
+                                    <th>Chat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="l in data">
+                                    <td>{{l.$id}}</td>
+                                    <td>{{l.fecha | date:"dd/MM/yyyy"}}</td>
+                                    <td>{{l.asunto}}</td>
+                                    <td>
+                                        <a href="{{l.archivo}}" target="_blank">{{l.archivo ? 'Abrir' : '-'}}</a>
+                                    </td>
+                                    <td>
+                                        <i ng-click="abrirRespuestas(l)" class="material-icons">chat</i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <div ng-if="!data.length" class="white col s12">
+                            <br>
+                            <div class="col s12">
+                                <h5 class="center-align">No hay Tickets que mostrar.</h5>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <a href="#modalCrearTicket" class="btn-floating btn-large waves-effect waves-light red modal-trigger">
+        <i class="material-icons">add</i>
+    </a>
+    <ul id="slide-menu" class="side-nav">
+
+    </ul>
+    <!-- DIALOG MODAL -->
+    <div id="modalCrearTicket" class="modal white">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <form id="crearForm" name="crearForm" ng-submit="crearTicket()" class="row">
+                        <div class="col s12 center-align">
+                            <h5 class="center-align">Crear Ticket de Atención</h5>
+                        </div>
+                        <div class="input-field col s12">
+                            <input required id="asunto" type="text" ng-model="new.asunto" class="validate">
+                            <label for="asunto">Asunto</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <textarea required ng-model="new.descripcion" id="descripcion" class="materialize-textarea"></textarea>
+                            <label for="descripcion">Descripción</label>
+                        </div>
+                        <div class=" col s12">
+                            <div class="file-field input-field">
+                                <div class="btn">
+                                    <span>Archivo a adjuntar (opcional)</span>
+                                    <input id="archivo" type="file">
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12">
+                            <button ng-disabled="crearForm.$invalid" class="btn waves-effect" type="submit">Crear ticket</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+        </div>
+    </div>
+    <div id="modalRespuestas" class="modal white">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <div class="col s12 center-align">
+                        <h5 class="center-align">Chat del Ticket</h5>
+                        <p class="center-align">{{editar.descripcion}}</p>
+                    </div>
+                    <div class="col s12">
+                        <div class="row">
+                            <div ng-repeat="r in respuestas" class="col s6 {{r.condomino ? 'offset-s6 mensaje-condomino' : 'mensaje-administrador'}}">
+                                <small>{{r.fecha | date:'dd/MM/yy HH:MM'}}</small><br>
+                                {{r.mensaje}}
+                            </div>
+                            <div ng-if="!respuestas.length" class="col s12">
+                                <h5 class="center-align">Aún no hay mensajes</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <form ng-if="editar.abierto" class="col s12" id="enviarRespuesta" name="enviarRespuesta" ng-submit="crearRespuesta(respuesta.mensaje)" class="row">
+                    <div class="input-field col s12">
+                        <textarea placeholder="Escribe un nuevo mensaje" required ng-model="respuesta.mensaje" id="mensaje" class="materialize-textarea"></textarea>
+                    </div>
+                    <div class="col s12">
+                        <button ng-disabled="enviarRespuesta.$invalid" class="btn waves-effect" type="submit">Enviar mensaje</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+        </div>
+    </div>
+    <footer class="white-text page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="white-text">{{condominio_data.nombre}} | Administrado por Grupo Alzar</h5>
+
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                <span>Versión 1.0 [Enero de 2017]</span>
+            </div>
+        </div>
+    </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+        authDomain: "alzargt.firebaseapp.com",
+        databaseURL: "https://alzargt.firebaseio.com",
+        projectId: "alzargt",
+        storageBucket: "alzargt.appspot.com",
+        messagingSenderId: "105762378399"
+    };
+    firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="https://rawgit.com/buberdds/angular-bootstrap-colorpicker/master/js/bootstrap-colorpicker-module.min.js"></script>
+
+<script src="js/color.min.js"></script>
+<script src="js/addWait.js"></script>
+<script src="js/reporte.js"></script>
+<script src="js/usuarios.js"></script>
+
+</html>

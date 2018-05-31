@@ -1,0 +1,35 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "usuarios": {
+    	"$uid":{
+        ".read": "auth != null  && root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador'  || $uid == auth.uid ",
+        ".write": "auth != null  && (root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador' || root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador' || $uid == auth.uid )",
+        "tipo": {
+          ".write": "auth != null  && (root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador' || root.child('usuarios/' + auth.uid + '/tipo').val() == 'manager' )",
+        }
+      }
+    },
+    "crearUsuarios": {
+        ".write": "(newData.child('tipo').val() == 'usuario') || (newData.child('tipo').val() == 'supervisor' && (root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador' || (root.child('usuarios/' + auth.uid + '/tipo').val() == 'manager' && root.child('usuarios/' + auth.uid + '/empresaUid').val() == newData.child('empresaUid').val() ) ) ) || (newData.child('tipo').val() == 'manager' && root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador') || (newData.child('tipo').val() == 'administrador' && root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador')",
+      ".read": false
+    },
+    "empresas": {
+      ".read": false,
+      ".write": "root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador' ",
+      "$eid": {
+      	".write": "root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador' || (root.child('usuarios/' + auth.uid + '/tipo').val() == 'manager' && root.child('usuarios/' + auth.uid + '/empresa').val() == $eid )",  
+        ".read": true
+      },
+    },
+    "empresasCodigos": {
+      ".read": false,
+      ".write": "root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador' ",
+      "$eid": {
+				".write": "root.child('usuarios/' + auth.uid + '/tipo').val() == 'administrador' || (root.child('usuarios/' + auth.uid + '/tipo').val() == 'manager' && root.child('usuarios/' + auth.uid + '/empresa').val() == $eid )",  
+        ".read": true
+      }
+    }
+  }
+}

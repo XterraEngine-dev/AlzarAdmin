@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es" >
+<head>
+    <meta charset="UTF-8">
+    <title>Somos más</title>  
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Cambios personales -->
+    <link href="css/encuestas.css" rel="stylesheet" media="all">
+</head>
+<body>
+
+
+  <header>
+   
+  </header>
+  <main style="min-height: 100vh !important;">
+    <div class="not" id="controles">
+      <button id="siguienteButton" type="button" class=" btn-large next  waves-effect waves-light usar-color-secundario hoverable">Siguiente <i class="large material-icons right">navigate_next</i></button>
+      <button onclick="anterior()" type="button" class="not btn-floating prev btn-large waves-effect waves-light usar-color-secundario hoverable"> <i class="large material-icons">navigate_before</i></button>
+      <div class="progress stiky-progress">
+        <div class="determinate" style="width: 70%"></div>
+      </div>
+    </div>
+    <div id="sequence">
+        
+        <ul id="seq" class="seq-canvas">
+
+            <li class="step1">
+            <div class="content">
+                <div class="row">
+                  <div class="col s12 m10 l8 offset-m1 offset-l2">
+                    <h2 class="header">Empresa</h2>
+                    <div class="row  usar-color-secundario z-depth-3" style="overflow: hidden;position: relative; border-radius: 5px;max-width: 800px">
+                      <div class="col s12 m12 l12 " style="padding: 0 !important;">
+                        <img class="img-responsive" src="https://firebasestorage.googleapis.com/v0/b/surveygtc-d6270.appspot.com/o/encuestas%2F-Kq_3KjBUSZhl7Gqw0Vk%2FDesert.jpg?alt=media&token=23dcb3b2-757f-422d-89d3-b3ac908beadc" width="100%" height="auto">
+                      </div>
+                      <div class="col s12 m12 l12 usar-color-secundario cardPresentacion white-text " >
+                        <h3 class="center-align" style="margin-left: 10px; margin-top: 10px;">Titulo de la encuesta</h3>
+                        <p class="grey-text text-lighten-5">Esta es una encuesta de prueba para hacer muchas cosas bonitas</p>
+                      </div>
+                    </div>
+                    <a class="btn-large waves-effect usar-color-secundario white-text bold hoverable">Iniciar</a>
+                  </div>
+                </div>
+                
+            </div>
+            </li>
+
+            <li class="step2">
+            <div class="content">
+                <h2 data-seq>¿La atención recibida fue correcta?</h2>
+                <h5 data-seq>Haga click o toque la opción</h5>
+              <div class="contenedor">
+                <div data-seq class="respuestas row ">
+                    <div class="col s6 m4 l3 z-depth-3">
+                      <div class="respuesta-image">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/surveygtc-d6270.appspot.com/o/encuestas%2F-KqK41Kcv32caR5Ht04s%2Fgu2.gif?alt=media&token=8f1bacc6-dc0c-4ca4-84da-fc6079010fe4">
+                      </div>
+                      <div class="respuesta-texto">
+                        <p class="">I am a very simple card. I am good at containing small bits of information.
+                          I am convenient because I require little markup to use effectively.</p>
+                      </div>
+                      <div class="respuesta-selector">
+                        <input name="group1" type="radio" id="test1" />
+                        <label for="test1"></label>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            </li>
+            <li class="step3">
+            <div class="content">
+                <h2 data-seq>¿La atención recibida fue correcta?</h2>
+                <h5 data-seq>Haga click o toque la opción</h5>
+              <div class="contenedor">
+                <div data-seq class="respuestas row ">
+                    <div class="col s6 m4 l3 z-depth-3">
+                      <div class="respuesta-image">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/surveygtc-d6270.appspot.com/o/encuestas%2F-KqK41Kcv32caR5Ht04s%2Fgu2.gif?alt=media&token=8f1bacc6-dc0c-4ca4-84da-fc6079010fe4">
+                      </div>
+                      <div class="respuesta-texto">
+                        <p class="">I am a very simple card. I am good at containing small bits of information.
+                          I am convenient because I require little markup to use effectively.</p>
+                      </div>
+                      <div class="respuesta-selector">
+                        <input type="checkbox" id="test5" />
+                        <label for="test5"></label>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </li>
+
+            <li class="step4">
+            <div class="content">
+                <h2 data-seq>Por favor deja un comentario</h2>
+                <div data-seq class="texto row">
+                  <div class="input-field col s12 m8 l6 offset-m2 offset-l3 ">
+                    <textarea placeholder="Escribe tu respuesta aquí" id="textarea1" class="materialize-textarea hoverable" data-length="120"></textarea>
+                    <label for="textarea1"></label>
+                  </div>
+                </div>
+            </div>
+            </li>
+            <li class="step5">
+            <div class="content">
+                <h2 data-seq>Por favor deja un comentario</h2>
+                <div data-seq class="texto row">
+                  <div class="input-field col s12 m8 l6 offset-m2 offset-l3">
+                    <p class="range-field">
+                      <div class="value">10</div>
+                      <input type="range" min="0" max="10" step="1" value="10">
+                    </p>
+                  </div>
+                </div>
+            </div>
+            </li>
+
+            <li class="step6">
+            <div class="content">
+                <h2 data-seq>Por favor deja un comentario</h2>
+                <div data-seq class="texto row">
+                  <div class="col s12">
+                  <input class="not" type="text">
+                  <svg class="happy" width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Happy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(0, 0)">
+                            <circle id="Body" fill="#248C37" cx="22" cy="22" r="22"></circle>
+                          <g class="scaleFace">
+                            <g class="face">  
+                              <ellipse id="Eye-right" fill="#2C0E0F" cx="29.0875" cy="21.75" rx="1.89926471" ry="1.75"></ellipse>
+                                <ellipse id="Eye-left" fill="#2C0E0F" cx="14.8992647" cy="21.75" rx="1.89926471" ry="1.75"></ellipse>
+                                <path d="M21.8941176,27.8819633 C24.8588235,27.8819632 25.4941176,25.5404999 25.4941176,24.5648901 C25.4941176,23.5892803 24.4352941,23.9795242 22.1058824,23.9795242 C19.7764706,23.9795242 18.2941176,23.5892803 18.2941176,24.5648901 C18.2941176,25.5404999 18.9294118,27.8819633 21.8941176,27.8819633 Z" id="Mouth" fill="#2C0E0F"></path>
+                                <ellipse id="Tung" fill="#E23D18" cx="21.8941176" cy="26.4390244" rx="1.69411765" ry="0.780487805"></ellipse>
+                            </g>  
+                        </g>
+                    </svg>
+                    
+                  <svg class="neutral" width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                      <g>
+                          <circle id="body" fill="#F9AC1B" cx="22" cy="22" r="22"></circle>
+                          <g class="face">
+                            <g transform="translate(13.000000, 20.000000)" fill="#2C0E0F">
+                              <g class="mouth">
+                                  <g transform="translate(9, 5)" >
+                                    <rect x="-2" y="0" width="4" height="2" rx="2"></rect>
+                                  </g>
+                                </g>
+                                <ellipse class="right-eye" cx="16.0941176" cy="1.75" rx="1.90588235" ry="1.75"></ellipse>
+                                <ellipse class="left-eye" cx="1.90588235" cy="1.75" rx="1.90588235" ry="1.75"></ellipse>
+                            </g>
+                          </g>
+                      </g>
+                  </svg>
+
+                    <svg class="sad" width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                      <g id="sad" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(0, 0)">
+                          <circle id="body" fill="#E23D18" cx="22" cy="22" r="22"></circle>
+                          <g id="face" transform="translate(13.000000, 20.000000)">
+                              <g class="face">
+                              <path d="M7,4 C7,5.1045695 7.8954305,6 9,6 C10.1045695,6 11,5.1045695 11,4" class="mouth" stroke="#2C0E0F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(9.000000, 5.000000) rotate(-180.000000) translate(-9.000000, -5.000000) "></path>
+                              <ellipse class="right-eye" fill="#2C0E0F" cx="16.0941176" cy="1.75609756" rx="1.90588235" ry="1.75609756"></ellipse>
+                              <ellipse class="left-eye" fill="#2C0E0F" cx="1.90588235" cy="1.75609756" rx="1.90588235" ry="1.75609756"></ellipse>
+                            </g>
+                          </g>
+                      </g>
+                  </svg>
+                    
+                    
+
+
+
+
+                  </div>
+                </div>
+            </div>
+            </li>
+
+        </ul>
+        </div>
+    
+  </main>
+
+<!-- Modal Structure -->
+  <div id="dialogModal" class="modal white">
+    <div class="modal-content white" style="padding: 15px">
+      <br><br>
+      <div class="row">
+        <div class="col s10 m8 l6 offset-s1 offset-m2 offset-l3">
+          <h4 id="tituloDialogModal" class="black-text"></h4>
+          <p id="textoDialogModal" class="black-text"></p>
+        </div>
+        <div id="preDialogModal" class="col s10 m8 l6 offset-s1 offset-m2 offset-l3" style="display:none">
+          <div class="progress">
+              <div class="indeterminate blue"></div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    <div id="footerDialogModal" class="modal-footer white">
+      <a href="#!" id="cancelarDialogModal" class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+      <a href="#!" id="aceptarDialogModal" class="modal-action modal-close waves-effect waves-green btn-flat">Aceptar</a>
+    </div>
+  </div>
+<!-- Modal EXCEL -->
+  <div id="excelModal" class="modal white modal-fixed-footer">
+    <div class="modal-content ">
+      <div class="topModal green darken-4">
+        <h4>Selecciona el archivo de Excel</h4>
+         <i class="large material-icons">explicit</i>
+      </div>
+      <p class="center-align"><br><br> Por favor seleccione el archivo de Excel, recuerde debe tener un formato preestablecido, si lo desea puede descargarlo desde aquí <a href="https://firebasestorage.googleapis.com/v0/b/surveygtc-d6270.appspot.com/o/FORMATO_ENCUESTAS.xlsx?alt=media&token=bd6273df-8d33-4153-a107-cefdbd465e11">FORMATO_ENCUESTAS.xlsx</a><br> </p>
+      <div class="row">
+        <div class="input-field col s10 offset-s1 m8 offset-m2 l6 offset-l3 center-align">
+          <a class="btn  waves-effect waves-light green darken-2 center-align" onclick="document.getElementById('excel-file').click();">
+            <i class="material-icons left">cloud</i> Subir archivo
+            <input id="excel-file" style="opacity:0" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" type="file">
+          </a>    
+          <br><br>
+          <p id="errorExcel"></p>
+        </div>
+        <div class="col s6 offset-s3">
+          <div class="progress">
+            <div id="progresoExcel" class="determinate green darken-3" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer ">
+      <a  class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+      <a id="duplicarAceptar" class="waves-effect waves-green btn green darken-4">Aceptar</a>
+    </div>
+  </div>
+  </div>
+</body>
+  <script src="https://www.gstatic.com/firebasejs/4.1.5/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyD0eKSj-KaJaFF2Hz2JVHboOGC3IUkud3Q",
+      authDomain: "surveygtc-d6270.firebaseapp.com",
+      databaseURL: "https://surveygtc-d6270.firebaseio.com",
+      projectId: "surveygtc-d6270",
+      storageBucket: "surveygtc-d6270.appspot.com",
+      messagingSenderId: "1047127218061"
+    };
+    firebase.initializeApp(config);
+  </script>
+  
+  <script   src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script>
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+  <script src="js/imagesloaded.pkgd.min.js"></script>
+  <script src="js/hammer.min.js"></script>
+  <script src="js/sequence.min.js"></script>
+  <script src="js/encuestas.js"></script>
+  <script src="js/addWait.js"></script>
+</html>

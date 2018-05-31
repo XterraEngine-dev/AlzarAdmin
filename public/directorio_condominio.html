@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html ng-app="app" ng-controller="ctrl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{condominio_nombre}} | Grupo Alzar</title>
+    <!-- Compiled and minified CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Cambios personales -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pikaday.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body>
+
+    <header>
+        <div class="navbar-fixed">
+            <nav class="white black-text">
+                <div class="nav-wrapper black-text">
+                    <a href="index.html" class="brand-logo center black-text">
+                        <img src="img/logo.png" ng-src="{{condominio_data.logo}}" height="50px" width="auto" alt="{{condominio_data.nombre}}"> </a>
+
+                    <ul id="nav-mobile" class="left ">
+                        <li>
+                            <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                                <i class="material-icons black-text">menu</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+    </header>
+    <main ng-cloak class="grey lighten-4">
+
+        <div class="row" id="agenciasListado">
+            <div class="col s12 ">
+                <div class="col s12">
+                    <div class="card white">
+                        <div class="card-content">
+                            <span class="card-title">
+                                Directorio de servicios de mi comunidad
+                            </span>
+                            <div class="row">
+                                <form class="col s12 m6" autocomplete="off">
+                                    <div class="input-field">
+                                        <input ng-model="search" id="search" type="text" required>
+                                        <label>
+                                            Filtrar por nombre o texto
+                                        </label>
+                                    </div>
+                                </form>
+                                <form class="col s12 m6" autocomplete="off">
+                                    <div class="input-field black-text">
+                                        <input required id="autocomplete-input" class="autocomplete" ng-model="profesion" type="text" class="validate">
+                                        <label for="profesion" data-error="incorrecto" data-success="correcto">Filtrar por profesión o servicio</label>
+
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col s12">
+
+                    <div class="row">
+                        <div ng-repeat="p in (data | filter:search | filter:profesion)" class="col s12 m6 l4 tarjeta_profesional">
+                            <div class="card sticky-action hoverable">
+                                <div class="card-content" style="    overflow-y: scroll; height: 250px">
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <img style="width: 50px;height: 50px;margin-left: 50%;transform: translateX(-50%);" class="responsive-img circle" src="{{p.perfil}}">
+                                            <h5 class="center-align">{{p.nombre}}</h5>
+                                            <p class="center-align">
+                                                <b>{{p.profesion}}</b>
+                                            </p>
+                                            <br>
+                                            <br>
+                                            <p>
+                                                {{p.servicios}}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="card-action">
+                                    <a class="btn-flat blue-text text-darken-2" href="mailto:{{p.correo}}">Enviar correo</a>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <div ng-if="!data.length" class="white col s12 z-depth-2">
+                            <br>
+                            <div class="col s12">
+                                <br>
+                                <h5 class="center-align">No hay perfiles públicos de profesionales en tu residencial.</h5>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <ul id="slide-menu" class="side-nav">
+
+    </ul>
+
+    <footer class="   white-text page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="white-text">{{condominio_data.nombre}} | Administrado por Grupo Alzar</h5>
+
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                <span>Versión 1.0 [Enero de 2017]</span>
+            </div>
+        </div>
+    </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+        authDomain: "alzargt.firebaseapp.com",
+        databaseURL: "https://alzargt.firebaseio.com",
+        projectId: "alzargt",
+        storageBucket: "alzargt.appspot.com",
+        messagingSenderId: "105762378399"
+    };
+    firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="https://rawgit.com/buberdds/angular-bootstrap-colorpicker/master/js/bootstrap-colorpicker-module.min.js"></script>
+
+<script src="js/color.min.js"></script>
+<script src="js/addWait.js"></script>
+<script src="js/directorio_condominio.js"></script>
+<script src="js/usuarios.js"></script>
+
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html ng-app="app" style="overflow-x: hidden;">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Grupo Alzar</title>
+    <!-- Compiled and minified CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1 maximum-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Cambios personales -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pikaday.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/master/animate.css">
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body ng-controller="ctrl">
+
+    <header>
+        <div class="navbar-fixed">
+            <nav class="white black-text">
+                <div class="nav-wrapper black-text">
+                    <a href="index.html" class="brand-logo center black-text">
+                        <img src="img/logo.png" height="50px" width="auto"> </a>
+
+                    <ul id="nav-mobile" class="left ">
+                        <li>
+                            <a href="#" data-position="right" data-delay="50" data-tooltip="Ver menu" data-activates="slide-menu" id="menu-button" class="tooltipped button-collapse show-on-large">
+                                <i class="material-icons black-text">menu</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+    </header>
+
+
+
+    <ul id="slide-menu" class="side-nav">
+    </ul>
+
+
+    <!--INICIO CARDS  -->
+
+
+    <div class="row">
+        <div class="col s12 m12">
+            <div class="card blue-grey darken-1">
+                <div class="card-content white-text">
+                    <span class="card-title">Cuenta corriente</span>
+                </div>
+                <nav>
+                    <div class="nav-wrapper">
+                        <div ng-if="userTipo == 'coordinador'" class="col m5 s12">
+                            <select class="browser-default black-text" ng-model="condominioSeleccionado" name="condominioSeleccionado" required style="margin-top: 10px"
+                                ng-change="cargarCondominio(condominioSeleccionado,true)">
+                                <option value="" disabled selected>Selecciona un condominio</option>
+                                <option ng-repeat="(key, condominio) in condominios" value="{{condominio.$id}}">{{condominio.nombre}}</option>
+                            </select>
+                        </div>
+                        <div class="col m1 s5">
+                            <select class="browser-default black-text" ng-model="mesSeleccionado" name="mesSeleccionado" required style="margin-top: 10px">
+                                <option value="" disabled selected>Hace (dias)</option>
+                                <option value="1">120</option>
+                                <option value="2">90</option>
+                                <option value="3">60</option>
+                                <option value="4">30</option>
+
+                            </select>
+
+                        </div>
+
+                     
+                        <a ng-click="cargarCondominio(condominioSeleccionado,true)" class="waves-effect waves-light btn">cargar</a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <main class="grey  row lighten-4">
+        <div class="" id="agenciasListado">
+
+            <nav>
+                <div class="nav-wrapper">
+                    <form>
+                        <div class="input-field">
+                            <input ng-model-options="{debounce: 1000}" ng-model="search" id="search" type="search" required>
+                            <label class="label-icon" for="search">
+                                <i class="material-icons">search</i>
+                            </label>
+                            <i ng-click="borrarSearch()" class="material-icons">close</i>
+                        </div>
+                    </form>
+                </div>
+            </nav>
+            <div class="tableContainer white">
+                <table class="highlight centered  ">
+                    <thead>
+                        <tr>
+
+                            <th>Código</th>
+                            <th>Correo</th>
+                            <th>Cuenta Corriente</th>
+                            <th>Entrante</th>
+                            <th>Saliente</th>
+                            <th>saldo</th>
+                        </tr>
+                    </thead>
+
+                    <tbody ng-if="noCargando">
+                        <tr ng-if="res.length" ng-repeat="(i, condominio) in res = ( condominos | filter:search)" class="{{condominio.consumo > condomino.cuota_agua ? 'red lighten-3' : 'white'}}">
+
+                            <td ng-bind="condominio.codigo"></td>
+                            <td ng-bind="condominio.nombre"></td>
+
+                            <td>
+                                <i ng-click="verHistorial(condominio)" class="black-text center-align material-icons center">history</i>
+                            </td>
+                            <td>
+                                <i ng-click="modalEntrantes()" class="black-text center-align material-icons center">trending_down</i>
+                            </td>
+                            <td>
+                                <i ng-click="modalSalientes()" class="black-text center-align material-icons center">trending_up</i>
+                            </td>
+                        </tr>
+                        <tr ng-if="!res.length">
+                            <td colspan="12">
+                                <h5 class="center-align">No hay condominos que mostrar</h5>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody ng-if="!noCargando">
+                        <tr>
+                            <td colspan="12">
+                                <div class="preloader-wrapper big active">
+                                    <div class="spinner-layer spinner-blue-only">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </main>
+
+
+    <!-- FIN CARDS -->
+
+    <!-- MODAL ALERTA -->
+    <div id="modal_alerta" class="modal modal-fixed-footer white" style="height: 25%;">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <br>
+                    <h4 class="center-align" ng-bind="titulo_alerta"></h4>
+                    <div class="center-align" ng-bind="descripcion_alerta">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a ng-click="confirmarAlerta(true)" class="modal-action modal-close waves-effect waves-green btn-flat ">Aceptar</a>
+        </div>
+    </div>
+
+
+
+    <!-- MODAL CONSOLIDAR -->
+
+    <div id="modalConsolidar" class="modal modal-fixed-footer white" style="height: 25%;" class="modal">
+        <div class="modal-content">
+            <center>
+                <br>
+                <h4>Consolidar cuentas corrientes</h1>
+            </center>
+            <center>
+                <p>
+                    <h8>
+                        ¿Está seguro de consolidar la cuenta corriente con las cargas de excel?
+                    </h8>
+                </p>
+            </center>
+        </div>
+        <div class="modal-footer">
+            <center>
+                <a ng-click="proceso_de_consolidacion(condominioSeleccionado)" class="waves-effect waves-light btn red">CONSOLIDAR</a>
+            </center>
+
+        </div>
+    </div>
+
+
+
+
+    <!-- INICIO DE MODAL PARA EXCEL -->
+    <div id="excelModal" class="modal modal-fixed-footer">
+        <form name="excelForm" class=" black-text">
+            <div class="modal-content white">
+                <div class="topModal green darken-2">
+                    <h4>Excel</h4>
+                    <i class="large material-icons">explicit</i>
+                </div>
+                <br>
+                <div class="row">
+                    <h5 class="center-align">Importar cobros y pagos</h5>
+                    <div class="input-field col s10 offset-s1 m8 offset-m2">
+                        <div class="file-field input-field ">
+                            <div class="btn black">
+                                <span class="">Archivo de Excel</span>
+                                <input accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="excelI"
+                                    type="file">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 center-align">
+                        <button ng-click="importarCobros()" class="waves-effect waves-green red btn ">Subir cobros y pagos (serán cargados al condominio actual)</button>
+                        <br>
+                        <small>Los usuarios se crearán individualmente</small>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+                <div class="row">
+                    <br>
+                    <br>
+                    <div class="col s12 center-align">
+                        <h5 class="center-align">Archivo para CARGAR PAGOS Y COBROS</h5>
+                        <div class="col s12 center-align">
+                            <a href="https://drive.google.com/open?id=1klIWmAQSKo66pAfqOcLrvb12LXEb1rVX" target="_blank" class="waves-effect waves-green green darken-3 btn ">DESCARGAR PLANTILLA</a>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="col s10 offset-s1" style="height: 120px;">
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancelar</a>
+                <button type="submit" class="waves-effect waves-green btn ">Guardar</button>
+            </div>
+        </form>
+    </div>
+    <!-- FINAL DE MODAL PARA EXCEL -->
+
+
+
+    <!--Consolidar Cuenta -->
+
+    <a ng-if="condominioSeleccionado" data-position="top" href="#modalConsolidar" data-delay="50" data-tooltip="Añadir usuario"
+        ng-click="consolidar()" class=" btn-floating btn-large waves-effect tooltipped waves-light modal-trigger">
+        <i class="material-icons">assessment</i>
+    </a>
+    <!--Cargar excel-->
+    <a ng-if="condominioSeleccionado" data-position="top" href="#excelModal" data-delay="50" data-tooltip="Excel" class="green darken-2 btn-floating btn-large waves-effect tooltipped waves-light modal-trigger"
+        style="right: 90px;">
+        <i class="material-icons">explicit</i>
+    </a>
+
+
+
+    <!--Modal Entrantes-->
+
+
+    <div id="modal_entrante" class="modal modal-fixed-footer white" style="height: 25%;">
+        <div class="modal-content">
+            <h4>Modal Header</h4>
+            <p>A bunch of text</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">cerrar</a>
+        </div>
+    </div>
+
+
+    <!--Modal salientes-->
+
+
+    <div id="modal_saliente" class="modal modal-fixed-footer white" style="height: 25%;">
+        <div class="modal-content">
+            <h4></h4>
+            <p>A bunch of text</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">cerrar</a>
+        </div>
+    </div>
+
+
+
+
+
+
+    <footer class="white-text page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="white-text">Grupo Alzar</h5>
+                    <ul id='credits'>
+                        <li>
+                            Proyecto de Grupo Alzar
+                        </li>
+                        <li>
+                            Desarrollado para uso de Grupo Alzar y sus clientes filiales.
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                <span>Versión 1.0 [Enero de 2017]</span>
+            </div>
+        </div>
+    </footer>
+
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAlxNi1Ifj5WEuecg1ew1Yh-IwYUSI9-ak",
+        authDomain: "alzargt.firebaseapp.com",
+        databaseURL: "https://alzargt.firebaseio.com",
+        projectId: "alzargt",
+        storageBucket: "alzargt.appspot.com",
+        messagingSenderId: "105762378399"
+    };
+    firebase.initializeApp(config);
+</script>
+
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script src="js/addWait.js"></script>
+<script src="js/cuenta-corriente.js"></script>
+<script src="js/usuarios.js"></script>
+<!-- EXCEL -->
+<script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/cpexcel.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/jszip.js"></script>
+
+</html>
