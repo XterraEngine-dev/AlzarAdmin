@@ -54,6 +54,9 @@ var saldo_arr = [];
 var amenidadades_pos = [];
 var amenidadades_neg = [];
 
+
+var amenidadPo;
+
 (function () {
     var app = angular.module("app", ["firebase"]);
 
@@ -773,9 +776,18 @@ var amenidadades_neg = [];
 
 
 
-                    costo_amenidad(u_condominio, u_condomino.$id).then(
-                        totalP => console.log('TOTAL POSITIVO: ', totalP)
+                    costo_amenidad_pos(u_condominio, u_condomino.$id).then(
+                        amenidadades_pos => exportPos(amenidadades_pos)
                     );
+
+
+
+
+                    costo_amenidad_neg(u_condominio, u_condomino.$id).then(
+                        amenidadades_neg => exportNeg(amenidadades_neg)
+                    );
+
+
 
                     //costo_amenidad(u_condominio, u_condomino.$id).then())
 
@@ -785,10 +797,8 @@ var amenidadades_neg = [];
 
 
 
-                    console.log('n',s_costo_amenidad_neg);
 
-                    console.log('p',s_costo_amenidad_pos)
-                    
+
                     console.log('cuota', s_costo_mantenimiento)
                     console.log('amenidad total', s_costo_amenidad_total)
                     console.log('costo exceso ', s_costo_exceso)
@@ -805,6 +815,7 @@ var amenidadades_neg = [];
 
 
 
+
                 })
                 x++
             }
@@ -812,75 +823,114 @@ var amenidadades_neg = [];
 
 
 
-        function costo_amenidad(a,b){
+
+
+        function exportNeg(n) {
+
+
+            var arr_neg = [];
+            var total = 0
+            for (var i = 0; i < n.length; i++) {
+                total += n[i]
+            }
+            console.log('total neg', total)
+            //negativas = total;
+
+            arr_neg.push({
+                neg: total
+            })
+
+
+            $scope.saldosAN = arr_neg
+
+        }
+
+        //{{saldos[$index].total}}
+
+        function exportPos(p) {
+
+            var arr_pos = [];
+            var total = 0
+            for (var i = 0; i < p.length; i++) {
+                total += p[i]
+            }
+            console.log('total pos', total)
+            // positivas = total;
+            arr_pos.push({
+                pos: total
+            })
+            $scope.saldosAP = arr_pos
+
+        }
+
+
+
+        function costo_amenidad_pos(a, b) {
             return new Promise(function (resolve, reject) {
                 amenidad_ref.child(a).child(b).once("value").then(function (snapshot) {
 
 
                     if (snapshot.val()) {
-    
+
                         snapshot.forEach(element => {
                             var child = element.val();
-    
-    
-    
-                           
+
+
+
+
                             if (child.estado == 'aprobado') {
-                                /*
-                                saldo_master.push({
-                                    tipo: 'AMENIDAD',
-                                    detalle: 'Reserva de amenidad ' + child.nombre_amenidad,
-                                    entrante: 0,
-                                    saliente: child.total
-                                });*/
+
                                 console.log('saliente', child.total)
-                               
-                                /*amenidadades_pos.push({
-                                    amenidadPos: child.total
-                                });*/
                                 amenidadades_pos.push(child.total)
-    
-                               
-                                var totalP = 0
-                                var i = 0;
-                                for (i ; i < amenidadades_pos.length; i++) {
-                                    totalP += amenidadades_pos[i]
-                                }
-                                s_costo_amenidad_pos = totalP;
-                                if(i = amenidadades_pos.length ){
-                                    resolve(totalP);
-                                }
-                                console.log('f1_pos',s_costo_amenidad_pos)
-    
-                            } else if (child.estado == 'aprobacion') {
-                                /*   saldo_master.push({
-                                       tipo: 'AMENIDAD',
-                                       detalle: 'Reserva de amenidad ' + child.nombre_amenidad,
-                                       entrante: child.total,
-                                       saliente: 0
-                                   });*/
-                                console.log('entrante', child.total)
-                      
-                                amenidadades_neg.push(child.total);
-    
-                                var totalN = 0
-                                for (var i = 0; i < amenidadades_neg.length; i++) {
-                                    totalN += amenidadades_neg[i]
-                                }
-                                s_costo_amenidad_neg = totalN;
-                                //resolve(totalN);
-                                console.log('f2_ng',s_costo_amenidad_neg)
+
+                                $timeout(function () {
+                                    resolve(amenidadades_pos)
+                                });
                             }
-    
                         });
-    
-    
+
+
                     } else {
                         s_costo_amenidad_neg = 0;
                         s_costo_amenidad_pos = 0;
                     }
-    
-    
+
+
+                }), function (err, content) {
+                    resolve(content)
+                };
+            });
+        }
+
+        function costo_amenidad_neg(a, b) {
+            return new Promise(function (resolve, reject) {
+                amenidad_ref.child(a).child(b).once("value").then(function (snapshot) {
+
+                    if (snapshot.val()) {
+
+                        snapshot.forEach(element => {
+                            var child = element.val();
+
+                            if (child.estado == 'aprobacion') {
+
+                                console.log('entrante', child.total)
+
+                                amenidadades_neg.push(child.total);
+
+                                $timeout(function () {
+                                    resolve(amenidadades_neg)
+                                })
+                            }
+
+                        });
+
+
+                    } else {
+                        s_costo_amenidad_neg = 0;
+                        s_costo_amenidad_pos = 0;
+                    }
+
+
                 }), function (err, content) {
                     resolve(content)
                 };
@@ -888,74 +938,6 @@ var amenidadades_neg = [];
         }
 
 
-
-        function cargar_amenidad(a, b) {
-
-
-            amenidad_ref.child(a).child(b).once("value").then(function (snapshot) {
-
-
-                if (snapshot.val()) {
-
-                    snapshot.forEach(element => {
-                        var child = element.val();
-
-
-
-                       
-                        if (child.estado == 'aprobado') {
-                            /*
-                            saldo_master.push({
-                                tipo: 'AMENIDAD',
-                                detalle: 'Reserva de amenidad ' + child.nombre_amenidad,
-                                entrante: 0,
-                                saliente: child.total
-                            });*/
-                            console.log('saliente', child.total)
-                           
-                            /*amenidadades_pos.push({
-                                amenidadPos: child.total
-                            });*/
-                            amenidadades_pos.push(child.total)
-
-                           
-                            var totalP = 0
-                            for (var i = 0; i < amenidadades_pos.length; i++) {
-                                totalP += amenidadades_pos[i]
-                            }
-                            s_costo_amenidad_pos = totalP;
-                            console.log('f1_pos',s_costo_amenidad_pos)
-
-                        } else if (child.estado == 'aprobacion') {
-                            /*   saldo_master.push({
-                                   tipo: 'AMENIDAD',
-                                   detalle: 'Reserva de amenidad ' + child.nombre_amenidad,
-                                   entrante: child.total,
-                                   saliente: 0
-                               });*/
-                            console.log('entrante', child.total)
-                  
-                            amenidadades_neg.push(child.total);
-
-                            var totalN = 0
-                            for (var i = 0; i < amenidadades_neg.length; i++) {
-                                totalN += amenidadades_neg[i]
-                            }
-                            s_costo_amenidad_neg = totalN;
-                            console.log('f2_ng',s_costo_amenidad_neg)
-                        }
-
-                    });
-
-
-                } else {
-                    s_costo_amenidad_neg = 0;
-                    s_costo_amenidad_pos = 0;
-                }
-
-
-            });
-        }
 
         function getConsumo(uid_condo, contador, fecha) {
 
@@ -985,17 +967,31 @@ var amenidadades_neg = [];
             if (consumo > 0) {
                 console.log('Consumo', consumo);
 
+                var arr_cosumo = [];
                 var exceso = consumo;
                 var costo_exceso = exceso * costo_m_c;
 
                 s_costo_exceso = costo_exceso;
+
+                arr_cosumo.push({
+                    exceso: costo_exceso
+                });
+
+                
+                $scope.saldosEx = arr_cosumo;
+
+
                 /*   console.log('costo: ', consumo)
                    console.log('exceso: ', exceso)*/
                 console.log('costo exceso: ', costo_exceso)
             } else {
+                var arr_cosumo = [];
                 console.log('Consumo', consumo);
                 console.log('costo exceso: ', 0)
-                s_costo_exceso = 0;
+                arr_cosumo.push({
+                    exceso: 0
+                });
+                $scope.costo_exceso = arr_cosumo;
             }
         }
 
