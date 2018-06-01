@@ -23,25 +23,42 @@ var saldosref = firebase.database().ref('cuenta_corriente').child('saldos');
 var condomino_ref = firebase.database().ref('condominos');
 var lecturas_ref = firebase.database().ref('lecturas');
 
+/**
+ * Transacciones
+ */
+var transaccion_ref = firebase.database().ref('cuenta_corriente');
+var amenidad_ref = firebase.database().ref('mis_reservas');
+
+var transac_condomino;
+var transac_condominio;
 
 
 var f = {};
 var z = {};
-
 var obj, tipo, condominios, condominos, lecturas;
-
 var new_condominio;
-
 var mes;
 
 
 var param_mes;
 var param_anio;
+
+
+var s_costo_mantenimiento;
+var s_costo_amenidad_pos;
+var s_costo_amenidad_neg;
+var s_costo_exceso;
+
+var saldo_arr = [];
+
+var amenidadades_pos = [];
+var amenidadades_neg = [];
+
 (function () {
     var app = angular.module("app", ["firebase"]);
 
 
-    app.controller('ctrl', function ($scope, $firebaseAuth, $firebaseArray, $http, $filter) {
+    app.controller('ctrl', function ($scope, $firebaseAuth, $firebaseArray, $http, $filter, $timeout) {
         var time = new Date(), anio = time.getFullYear();
         $scope.anios = [
             anio - 2,
@@ -135,12 +152,27 @@ var param_anio;
 
         $scope.cargarCondominio = function (id, carga) {
 
+            cref.child(id).once("value").then(function (snapshot) {
+                if (snapshot.val()) {
+                    var data_snap = snapshot.val();
+
+                    console.log(data_snap.exceso_mes_siguiente)
+                    console.log(data_snap.exceso_mes_siguiente)
+                    console.log(data_snap.extraordinario_mes_siguiente)
+                    console.log(data_snap.inventario_mes_siguiente)
+                    console.log(data_snap.mantenimiento_mes_siguiente)
+                    console.log(data_snap.mora_mes_siguiente)
+                }
+            })
 
 
 
             if (carga) {
                 if (!$scope.condominioSeleccionado)
                     $scope.condominioSeleccionado = id;
+
+
+
                 if (!id)
                     id = $scope.condominioSeleccionado;
 
@@ -166,9 +198,12 @@ var param_anio;
                     if (condominos.length > 0) {
                         condominos.forEach(condomino => {
 
-
                             condomino.selected = false
                             if (condomino.contador) {
+
+
+                                cargarSaldo(id, condomino);
+
                                 firebase.database().ref("lecturas").child($scope.condominioSeleccionado).child(condomino.contador).child(mesT + "-" + anioT).once("value").then(function (s) {
                                     var da = s.val();
                                     // console.log(da)
@@ -200,8 +235,13 @@ var param_anio;
             } else {
                 if (!$scope.condominioSeleccionado)
                     $scope.condominioSeleccionado = id;
-                if (!id)
+                if (!id) {
+
                     id = $scope.condominioSeleccionado;
+
+
+                }
+
 
 
 
@@ -315,9 +355,6 @@ var param_anio;
 
 
 
-                            getConsumo(uid_condominio, contador, fecha_actual).then(consumo => calcular_insertar(consumo, limite, costoCuotaAguaExceso))
-
-
 
                             i++;
                         }
@@ -350,39 +387,10 @@ var param_anio;
 
 
 
-        function getConsumo(uid_condo, contador, fecha) {
-
-            return new Promise(function (resolve, reject) {
-                lecturas_ref.child(uid_condo).child(contador).child(fecha).once("value").then(function (snapshot) {
-
-                    if (snapshot.val()) {
-                        var lectura = snapshot.val();
-                        var lectura_actual = lectura.lectura;
-                        var lectura_pasada = lectura.lectura_pasada;
-                        var consumo = lectura.lectura - lectura.lectura_pasada
-
-                        resolve(consumo)
-                    }
-                }), function (err, content) {
-                    resolve(content)
-                };
-            });
-
-        }
 
 
 
 
-        function calcular_insertar(consumo, limite, costo_m_c) {
-
-            var exceso = consumo - limite;
-            var costo_exceso = exceso * costo_m_c;
-
-            console.log('costo: ', consumo)
-            console.log('exceso: ', exceso)
-            console.log('costo exceso: ', costo_exceso)
-
-        }
 
 
         //------------------------------------------------------------||>
@@ -629,20 +637,369 @@ var param_anio;
         }
 
 
-       /**
-        * Modals
-        */
+        /**
+         * Modals
+         */
 
 
-        $scope.modalEntrantes = function(){
+        $scope.modalEntrantes = function (condominio) {
             $("#modal_entrante").modal("open");
             console.log('modal_entrante')
+            console.log(condominio.$id)
+            console.log(condominio.condominio)
+
+            transac_condomino = condominio.$id
+            transac_condominio = condominio.condominio
         }
 
-        $scope.modalSalientes = function(){
+        $scope.modalSalientes = function (condominio) {
             $("#modal_saliente").modal("open");
             console.log('modal_saliente')
+            console.log(condominio.$id)
+            console.log(condominio.condominio)
+
+            transac_condomino = condominio.$id
+            transac_condominio = condominio.condominio;
         }
+
+
+        /**
+         * Formularios PAGOS y COBROS
+         */
+        $scope.Bsaliente = function (pago) {
+
+            console.log(pago.tipo)
+            console.log(pago.descripcion)
+            console.log(pago.valor)
+
+            console.log(transac_condominio)
+            console.log(transac_condomino)
+
+            //Ingresar transacicon en firebase
+
+            var pagoset = transaccion_ref.child(transac_condominio).push();
+            pagoset.set({
+                descripcion: pago.descripcion,
+                tipo: pago.tipo,
+                id_condomino: transac_condomino,
+                valor: pago.valor,
+                entrante: false,
+                fecha: Date.now()
+            })
+
+        }
+
+        $scope.Bentrante = function (cobro) {
+
+            console.log(cobro.tipo)
+            console.log(cobro.descripcion)
+            console.log(cobro.valor)
+
+            console.log(transac_condominio)
+            console.log(transac_condomino)
+
+            //Ingresar transaccion en firebase
+            var cobroset = transaccion_ref.child(transac_condominio).push();
+            cobroset.set({
+                descripcion: cobro.descripcion,
+                tipo: cobro.tipo,
+                valor: cobro.valor,
+                id_condomino: transac_condomino,
+                entrante: true,
+                fecha: Date.now()
+            })
+
+
+        }
+
+
+        /**
+         * Cargar saldo sin detalles
+         */
+
+
+        var x = 0;
+        function cargarSaldo(u_condominio, u_condomino) {
+
+
+
+            /**
+             * SUMAR CUENTAS
+             */
+            if (x < 1) {
+                $timeout(function () {
+
+
+
+                    /* LOGS propiedades de condomino
+                    console.log(u_condominio)
+                    console.log(u_condomino.$id)
+                    console.log(u_condomino.costo_cuota_agua)
+                    console.log(u_condomino.costo_cuota_agua_exceso)
+                    console.log(u_condomino.cuota_agua)*/
+
+                    // Prefijo S_ para variables de sumatoria.
+
+                    /**
+                     * CUOTA DE MANTENIMIENTO
+                     */
+
+                    var s_mantenimiento = u_condomino.cuota_agua;
+                    console.log('cuota de mantenimiento', s_mantenimiento)
+                    s_costo_mantenimiento = s_mantenimiento;
+
+                    /**
+                     * Exceso de Agua
+                     */
+
+                    var dt = new Date();
+                    var month = dt.getMonth() + 1;
+                    var year = dt.getFullYear();
+                    var fecha_actual = "0" + 5 + "-" + year;
+                    var contador = u_condomino.contador;
+                    getConsumo(u_condominio, contador, fecha_actual).then(consumo => calcular_exceso(
+                        consumo, u_condomino.costo_cuota_agua_exceso))
+
+
+
+
+                    /**
+                     * Amenidades 
+                     */
+
+
+                    //cargar_amenidad(u_condominio, u_condomino.$id)
+
+
+
+
+                    costo_amenidad(u_condominio, u_condomino.$id).then(
+                        totalP => console.log('TOTAL POSITIVO: ', totalP)
+                    );
+
+                    //costo_amenidad(u_condominio, u_condomino.$id).then())
+
+
+                    var s_costo_amenidad_total = s_costo_amenidad_neg - s_costo_amenidad_pos;
+                    var total = s_costo_mantenimiento + s_costo_amenidad_total + s_costo_exceso;
+
+
+
+                    console.log('n',s_costo_amenidad_neg);
+
+                    console.log('p',s_costo_amenidad_pos)
+                    
+                    console.log('cuota', s_costo_mantenimiento)
+                    console.log('amenidad total', s_costo_amenidad_total)
+                    console.log('costo exceso ', s_costo_exceso)
+
+                    console.log('TOTAL:', total)
+
+
+                    saldo_arr.push({
+                        total: total
+                    })
+
+                    $scope.saldos = saldo_arr;
+
+
+
+
+                })
+                x++
+            }
+        }
+
+
+
+        function costo_amenidad(a,b){
+            return new Promise(function (resolve, reject) {
+                amenidad_ref.child(a).child(b).once("value").then(function (snapshot) {
+
+
+                    if (snapshot.val()) {
+    
+                        snapshot.forEach(element => {
+                            var child = element.val();
+    
+    
+    
+                           
+                            if (child.estado == 'aprobado') {
+                                /*
+                                saldo_master.push({
+                                    tipo: 'AMENIDAD',
+                                    detalle: 'Reserva de amenidad ' + child.nombre_amenidad,
+                                    entrante: 0,
+                                    saliente: child.total
+                                });*/
+                                console.log('saliente', child.total)
+                               
+                                /*amenidadades_pos.push({
+                                    amenidadPos: child.total
+                                });*/
+                                amenidadades_pos.push(child.total)
+    
+                               
+                                var totalP = 0
+                                var i = 0;
+                                for (i ; i < amenidadades_pos.length; i++) {
+                                    totalP += amenidadades_pos[i]
+                                }
+                                s_costo_amenidad_pos = totalP;
+                                if(i = amenidadades_pos.length ){
+                                    resolve(totalP);
+                                }
+                                console.log('f1_pos',s_costo_amenidad_pos)
+    
+                            } else if (child.estado == 'aprobacion') {
+                                /*   saldo_master.push({
+                                       tipo: 'AMENIDAD',
+                                       detalle: 'Reserva de amenidad ' + child.nombre_amenidad,
+                                       entrante: child.total,
+                                       saliente: 0
+                                   });*/
+                                console.log('entrante', child.total)
+                      
+                                amenidadades_neg.push(child.total);
+    
+                                var totalN = 0
+                                for (var i = 0; i < amenidadades_neg.length; i++) {
+                                    totalN += amenidadades_neg[i]
+                                }
+                                s_costo_amenidad_neg = totalN;
+                                //resolve(totalN);
+                                console.log('f2_ng',s_costo_amenidad_neg)
+                            }
+    
+                        });
+    
+    
+                    } else {
+                        s_costo_amenidad_neg = 0;
+                        s_costo_amenidad_pos = 0;
+                    }
+    
+    
+                }), function (err, content) {
+                    resolve(content)
+                };
+            });
+        }
+
+
+
+        function cargar_amenidad(a, b) {
+
+
+            amenidad_ref.child(a).child(b).once("value").then(function (snapshot) {
+
+
+                if (snapshot.val()) {
+
+                    snapshot.forEach(element => {
+                        var child = element.val();
+
+
+
+                       
+                        if (child.estado == 'aprobado') {
+                            /*
+                            saldo_master.push({
+                                tipo: 'AMENIDAD',
+                                detalle: 'Reserva de amenidad ' + child.nombre_amenidad,
+                                entrante: 0,
+                                saliente: child.total
+                            });*/
+                            console.log('saliente', child.total)
+                           
+                            /*amenidadades_pos.push({
+                                amenidadPos: child.total
+                            });*/
+                            amenidadades_pos.push(child.total)
+
+                           
+                            var totalP = 0
+                            for (var i = 0; i < amenidadades_pos.length; i++) {
+                                totalP += amenidadades_pos[i]
+                            }
+                            s_costo_amenidad_pos = totalP;
+                            console.log('f1_pos',s_costo_amenidad_pos)
+
+                        } else if (child.estado == 'aprobacion') {
+                            /*   saldo_master.push({
+                                   tipo: 'AMENIDAD',
+                                   detalle: 'Reserva de amenidad ' + child.nombre_amenidad,
+                                   entrante: child.total,
+                                   saliente: 0
+                               });*/
+                            console.log('entrante', child.total)
+                  
+                            amenidadades_neg.push(child.total);
+
+                            var totalN = 0
+                            for (var i = 0; i < amenidadades_neg.length; i++) {
+                                totalN += amenidadades_neg[i]
+                            }
+                            s_costo_amenidad_neg = totalN;
+                            console.log('f2_ng',s_costo_amenidad_neg)
+                        }
+
+                    });
+
+
+                } else {
+                    s_costo_amenidad_neg = 0;
+                    s_costo_amenidad_pos = 0;
+                }
+
+
+            });
+        }
+
+        function getConsumo(uid_condo, contador, fecha) {
+
+            return new Promise(function (resolve, reject) {
+                lecturas_ref.child(uid_condo).child(contador).child(fecha).once("value").then(function (snapshot) {
+
+                    if (snapshot.val()) {
+                        var lectura = snapshot.val();
+                        var lectura_actual = lectura.lectura;
+                        var lectura_pasada = lectura.lectura_pasada;
+                        var consumo = lectura.lectura - lectura.lectura_pasada
+
+
+                        resolve(consumo)
+                    }
+                }), function (err, content) {
+                    resolve(content)
+                };
+            });
+
+        }
+
+
+        function calcular_exceso(consumo, costo_m_c) {
+
+
+            if (consumo > 0) {
+                console.log('Consumo', consumo);
+
+                var exceso = consumo;
+                var costo_exceso = exceso * costo_m_c;
+
+                s_costo_exceso = costo_exceso;
+                /*   console.log('costo: ', consumo)
+                   console.log('exceso: ', exceso)*/
+                console.log('costo exceso: ', costo_exceso)
+            } else {
+                console.log('Consumo', consumo);
+                console.log('costo exceso: ', 0)
+                s_costo_exceso = 0;
+            }
+        }
+
+
 
 
         $(document).ready(function () {

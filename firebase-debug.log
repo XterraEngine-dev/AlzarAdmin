@@ -1,0 +1,60 @@
+[debug] [2018-06-01T16:48:55.756Z] ----------------------------------------------------------------------
+[debug] [2018-06-01T16:48:55.759Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\cifue\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
+[debug] [2018-06-01T16:48:55.759Z] CLI Version:   3.18.5
+[debug] [2018-06-01T16:48:55.759Z] Platform:      win32
+[debug] [2018-06-01T16:48:55.759Z] Node Version:  v8.11.2
+[debug] [2018-06-01T16:48:55.783Z] Time:          Fri Jun 01 2018 10:48:55 GMT-0600 (Hora estándar, América Central)
+[debug] [2018-06-01T16:48:55.783Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-06-01T16:48:55.878Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-06-01T16:48:55.879Z] > authorizing via signed-in user
+[debug] [2018-06-01T16:48:55.880Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-06-01T16:48:55.881Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ { refresh_token: '1/kL4p_NG_ecBju7G-tR05DznJa1R1LSHxPtPp_OtlmP8tUJ6ilYI-7TpMTVZbOosO',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Fri Jun 01 2018 10:48:55 GMT-0600 (Hora estándar, América Central)
+[debug] [2018-06-01T16:48:56.767Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-01T16:48:56.918Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/alzargt  
+  
+ Fri Jun 01 2018 10:48:56 GMT-0600 (Hora estándar, América Central)
+[debug] [2018-06-01T16:48:57.640Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-01T16:48:57.640Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/alzargt/tokens  
+  
+ Fri Jun 01 2018 10:48:57 GMT-0600 (Hora estándar, América Central)
+[debug] [2018-06-01T16:48:58.293Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-01T16:48:58.294Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/alzargt  
+  
+ Fri Jun 01 2018 10:48:58 GMT-0600 (Hora estándar, América Central)
+[debug] [2018-06-01T16:48:58.712Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'C:\Users\cifue\Documents\AlzarAdmin'...
+[info] 
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-06-01T16:49:25.324Z] Fetching environment
+[debug] [2018-06-01T16:49:25.326Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/105762378399:getServerAppConfig  
+  
+ Fri Jun 01 2018 10:49:25 GMT-0600 (Hora estándar, América Central)
+[debug] [2018-06-01T16:49:25.326Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/105762378399/clients/_:getWebAppConfig  
+  
+ Fri Jun 01 2018 10:49:25 GMT-0600 (Hora estándar, América Central)
+[debug] [2018-06-01T16:49:25.889Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-01T16:49:26.728Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-01T16:49:26.728Z] Starting @google-cloud/functions-emulator
+[info] i  hosting: Serving hosting files from: public
+[info] +  hosting: Local server: http://localhost:5000
+
+[debug] [2018-06-01T16:49:39.192Z] Parsing function triggers
+[info] i  functions: No HTTPS functions found. Use firebase functions:shell if you would like to emulate other types of functions.
+[info] i  functions: No HTTPS functions found. Use firebase functions:shell if you would like to emulate other types of functions.
+[info] i  functions: No HTTPS functions found. Use firebase functions:shell if you would like to emulate other types of functions.
+[info] i  functions: No HTTPS functions found. Use firebase functions:shell if you would like to emulate other types of functions.
+[info] +  functions: enviarPush: http://localhost:5001/alzargt/us-central1/enviarPush
+[info] +  functions: crearCondomino: http://localhost:5001/alzargt/us-central1/crearCondomino
+[info] +  functions: eliminarCondomino: http://localhost:5001/alzargt/us-central1/eliminarCondomino
+[info] +  functions: crearUsuario: http://localhost:5001/alzargt/us-central1/crearUsuario
+[info] +  functions: enviarCorreo: http://localhost:5001/alzargt/us-central1/enviarCorreo
+[info] +  functions: eliminarUsuario: http://localhost:5001/alzargt/us-central1/eliminarUsuario
+[info] +  functions: cambiarContrasena: http://localhost:5001/alzargt/us-central1/cambiarContrasena

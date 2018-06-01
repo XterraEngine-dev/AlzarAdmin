@@ -93,7 +93,7 @@
 
                         </div>
 
-                     
+
                         <a ng-click="cargarCondominio(condominioSeleccionado,true)" class="waves-effect waves-light btn">cargar</a>
                     </div>
                 </nav>
@@ -131,7 +131,7 @@
                     </thead>
 
                     <tbody ng-if="noCargando">
-                        <tr ng-if="res.length" ng-repeat="(i, condominio) in res = ( condominos | filter:search)" class="{{condominio.consumo > condomino.cuota_agua ? 'red lighten-3' : 'white'}}">
+                        <tr ng-if="res.length" ng-repeat="(i, condominio) in res = ( condominos | filter:search )" class="{{condominio.consumo > condomino.cuota_agua ? 'red lighten-3' : 'white'}}">
 
                             <td ng-bind="condominio.codigo"></td>
                             <td ng-bind="condominio.nombre"></td>
@@ -140,10 +140,13 @@
                                 <i ng-click="verHistorial(condominio)" class="black-text center-align material-icons center">history</i>
                             </td>
                             <td>
-                                <i ng-click="modalEntrantes()" class="black-text center-align material-icons center">trending_down</i>
+                                <i ng-click="modalEntrantes(condominio)" class="black-text center-align material-icons center">trending_down</i>
                             </td>
                             <td>
-                                <i ng-click="modalSalientes()" class="black-text center-align material-icons center">trending_up</i>
+                                <i ng-click="modalSalientes(condominio)" class="black-text center-align material-icons center">trending_up</i>
+                            </td>
+                            <td>
+                               {{saldos[$index].total}}
                             </td>
                         </tr>
                         <tr ng-if="!res.length">
@@ -299,24 +302,81 @@
     <!--Modal Entrantes-->
 
 
-    <div id="modal_entrante" class="modal modal-fixed-footer white" style="height: 25%;">
+    <div id="modal_entrante" class="modal modal-fixed-footer white" style="height: 100%;">
         <div class="modal-content">
-            <h4>Modal Header</h4>
-            <p>A bunch of text</p>
+
+            <center>
+                <h1>Entrantes</h1>
+                <h4>Agregar pagos manuales</h4>
+                <br>
+            </center>
+            <!--Fomulario de transaccion-->
+            <div class="row">
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input placeholder="Placeholder" ng-model="pago.tipo" id="tipo_transaccion" required="" type="text" class="validate">
+                            <label for="tipo_transaccion">Tipo</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Placeholder" ng-model="pago.descripcion" id="tipo_transaccion" required="" type="text" class="validate">
+                            <label for="tipo_transaccion">Descripción</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="valor" type="number" ng-model="pago.valor" class="validate" required="">
+                            <label for="valor">valor de transacción</label>
+                        </div>
+                    </div>
+                </form>
+
+                <center>
+                    <a ng-click="Bsaliente(pago)" class="waves-effect waves-light btn">Cargar Exoneración</a>
+                </center>
+            </div>
+
         </div>
+
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-green btn-flat">cerrar</a>
         </div>
+
     </div>
 
 
     <!--Modal salientes-->
 
 
-    <div id="modal_saliente" class="modal modal-fixed-footer white" style="height: 25%;">
+    <div id="modal_saliente" class="modal modal-fixed-footer white" style="height: 100%;">
         <div class="modal-content">
-            <h4></h4>
-            <p>A bunch of text</p>
+
+            <center>
+                <h1>Salientes</h1>
+                <h4>Agregar cobros manuales</h4>
+                <br>
+            </center>
+
+            <!--Fomulario de transaccion-->
+            <div class="row">
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input placeholder="Placeholder" ng-model="cobro.tipo" id="tipo" type="text" required="" class="validate">
+                            <label for="tipo">Tipo</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="Placeholder" ng-model="cobro.descripcion" id="tipo_transaccion" required="" type="text" class="validate">
+                            <label for="tipo_transaccion">Descripción</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="valor" type="number" ng-model="cobro.valor" required="" class="validate">
+                            <label for="valor">valor de transacción</label>
+                        </div>
+                    </div>
+                    <center>
+                        <a ng-click="Bentrante(cobro)" class="waves-effect waves-light btn">Cargar cobro manual</a>
+                    </center>
+                </form>
+            </div>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-green btn-flat">cerrar</a>
