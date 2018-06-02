@@ -23,6 +23,11 @@ var saldosref = firebase.database().ref('cuenta_corriente').child('saldos');
 var condomino_ref = firebase.database().ref('condominos');
 var lecturas_ref = firebase.database().ref('lecturas');
 
+
+
+
+
+
 /**
  * Transacciones
  */
@@ -56,6 +61,13 @@ var amenidadades_neg = [];
 
 
 var amenidadPo;
+
+var arr_cuota = [];
+var arr_cosumop = [];
+var arr_cosumoneg = [];
+
+var arr_neg = [];
+var arr_pos = [];
 
 (function () {
     var app = angular.module("app", ["firebase"]);
@@ -206,6 +218,7 @@ var amenidadPo;
 
 
                                 cargarSaldo(id, condomino);
+                                cargarTransacciones(id, condomino);
 
                                 firebase.database().ref("lecturas").child($scope.condominioSeleccionado).child(condomino.contador).child(mesT + "-" + anioT).once("value").then(function (s) {
                                     var da = s.val();
@@ -694,12 +707,12 @@ var amenidadPo;
 
         $scope.Bentrante = function (cobro) {
 
-            console.log(cobro.tipo)
-            console.log(cobro.descripcion)
-            console.log(cobro.valor)
-
-            console.log(transac_condominio)
-            console.log(transac_condomino)
+            /*   console.log(cobro.tipo)
+               console.log(cobro.descripcion)
+               console.log(cobro.valor)
+   
+               console.log(transac_condominio)
+               console.log(transac_condomino)*/
 
             //Ingresar transaccion en firebase
             var cobroset = transaccion_ref.child(transac_condominio).push();
@@ -717,11 +730,11 @@ var amenidadPo;
 
 
         /**
-         * Cargar saldo sin detalles
+         * Cargar saldo sin detalles --------------------------------------
          */
 
 
-        var x = 0;
+
         function cargarSaldo(u_condominio, u_condomino) {
 
 
@@ -729,111 +742,112 @@ var amenidadPo;
             /**
              * SUMAR CUENTAS
              */
-            if (x < 1) {
-                $timeout(function () {
+            //  if (x < 1) {
+            $timeout(function () {
 
 
 
-                    /* LOGS propiedades de condomino
-                    console.log(u_condominio)
-                    console.log(u_condomino.$id)
-                    console.log(u_condomino.costo_cuota_agua)
-                    console.log(u_condomino.costo_cuota_agua_exceso)
-                    console.log(u_condomino.cuota_agua)*/
+                /* LOGS propiedades de condomino
+                console.log(u_condominio)
+                console.log(u_condomino.$id)
+                console.log(u_condomino.costo_cuota_agua)
+                console.log(u_condomino.costo_cuota_agua_exceso)
+                console.log(u_condomino.cuota_agua)*/
 
-                    // Prefijo S_ para variables de sumatoria.
+                // Prefijo S_ para variables de sumatoria.
 
-                    /**
-                     * CUOTA DE MANTENIMIENTO
-                     */
+                /**
+                 * CUOTA DE MANTENIMIENTO
+                 */
 
-                    var s_mantenimiento = u_condomino.cuota_agua;
-                    console.log('cuota de mantenimiento', s_mantenimiento)
-                    s_costo_mantenimiento = s_mantenimiento;
+                var s_mantenimiento = u_condomino.cuota_agua;
+                //  console.log('cuota de mantenimiento', s_mantenimiento)
+                s_costo_mantenimiento = s_mantenimiento;
 
-                    /**
-                     * Exceso de Agua
-                     */
+                /**
+                 * Exceso de Agua
+                 */
 
-                    var dt = new Date();
-                    var month = dt.getMonth() + 1;
-                    var year = dt.getFullYear();
-                    var fecha_actual = "0" + 5 + "-" + year;
-                    var contador = u_condomino.contador;
-                    getConsumo(u_condominio, contador, fecha_actual).then(consumo => calcular_exceso(
-                        consumo, u_condomino.costo_cuota_agua_exceso))
-
-
-
-
-                    /**
-                     * Amenidades 
-                     */
-
-
-                    //cargar_amenidad(u_condominio, u_condomino.$id)
+                var dt = new Date();
+                var month = dt.getMonth() + 1;
+                var year = dt.getFullYear();
+                var fecha_actual = "0" + 5 + "-" + year;
+                var contador = u_condomino.contador;
+                getConsumo(u_condominio, contador, fecha_actual).then(consumo => calcular_exceso(
+                    consumo, u_condomino.costo_cuota_agua_exceso))
 
 
 
 
-                    costo_amenidad_pos(u_condominio, u_condomino.$id).then(
-                        amenidadades_pos => exportPos(amenidadades_pos)
-                    );
+                /**
+                 * Amenidades 
+                 */
+
+
+                //cargar_amenidad(u_condominio, u_condomino.$id)
 
 
 
 
-                    costo_amenidad_neg(u_condominio, u_condomino.$id).then(
-                        amenidadades_neg => exportNeg(amenidadades_neg)
-                    );
-
-
-
-                    //costo_amenidad(u_condominio, u_condomino.$id).then())
-
-
-                    var s_costo_amenidad_total = s_costo_amenidad_neg - s_costo_amenidad_pos;
-                    var total = s_costo_mantenimiento + s_costo_amenidad_total + s_costo_exceso;
+                costo_amenidad_pos(u_condominio, u_condomino.$id).then(
+                    amenidadades_pos => exportPos(amenidadades_pos)
+                );
 
 
 
 
-
-                    console.log('cuota', s_costo_mantenimiento)
-                    console.log('amenidad total', s_costo_amenidad_total)
-                    console.log('costo exceso ', s_costo_exceso)
-
-                    console.log('TOTAL:', total)
+                costo_amenidad_neg(u_condominio, u_condomino.$id).then(
+                    amenidadades_neg => exportNeg(amenidadades_neg)
+                );
 
 
-                    saldo_arr.push({
-                        total: total
-                    })
 
-                    $scope.saldos = saldo_arr;
+                //costo_amenidad(u_condominio, u_condomino.$id).then())
+
+
+                var s_costo_amenidad_total = s_costo_amenidad_neg - s_costo_amenidad_pos;
+                var total = s_costo_mantenimiento + s_costo_amenidad_total + s_costo_exceso;
 
 
 
 
 
+                //console.log('cuota', s_costo_mantenimiento)
+
+
+
+
+                arr_cuota.push({
+                    cuota: s_costo_mantenimiento
                 })
-                x++
-            }
+
+                $scope.saldosMant = arr_cuota;
+
+                //console.log('amenidad total', s_costo_amenidad_total)
+
+
+                // console.log('TOTAL:', total)
+
+
+
+
+
+
+
+            })
+            //  x++
+            //}
         }
-
-
-
 
 
         function exportNeg(n) {
 
 
-            var arr_neg = [];
             var total = 0
             for (var i = 0; i < n.length; i++) {
                 total += n[i]
             }
-            console.log('total neg', total)
+            //console.log('total neg', total)
             //negativas = total;
 
             arr_neg.push({
@@ -845,16 +859,14 @@ var amenidadPo;
 
         }
 
-        //{{saldos[$index].total}}
-
         function exportPos(p) {
 
-            var arr_pos = [];
+
             var total = 0
             for (var i = 0; i < p.length; i++) {
                 total += p[i]
             }
-            console.log('total pos', total)
+            //console.log('total pos', total)
             // positivas = total;
             arr_pos.push({
                 pos: total
@@ -862,8 +874,6 @@ var amenidadPo;
             $scope.saldosAP = arr_pos
 
         }
-
-
 
         function costo_amenidad_pos(a, b) {
             return new Promise(function (resolve, reject) {
@@ -880,7 +890,7 @@ var amenidadPo;
 
                             if (child.estado == 'aprobado') {
 
-                                console.log('saliente', child.total)
+                                //console.log('saliente', child.total)
                                 amenidadades_pos.push(child.total)
 
                                 $timeout(function () {
@@ -913,7 +923,7 @@ var amenidadPo;
 
                             if (child.estado == 'aprobacion') {
 
-                                console.log('entrante', child.total)
+                                //console.log('entrante', child.total)
 
                                 amenidadades_neg.push(child.total);
 
@@ -937,8 +947,6 @@ var amenidadPo;
             });
         }
 
-
-
         function getConsumo(uid_condo, contador, fecha) {
 
             return new Promise(function (resolve, reject) {
@@ -960,40 +968,75 @@ var amenidadPo;
 
         }
 
-
         function calcular_exceso(consumo, costo_m_c) {
 
 
             if (consumo > 0) {
-                console.log('Consumo', consumo);
+                //console.log('Consumo', consumo);
 
-                var arr_cosumo = [];
+
                 var exceso = consumo;
                 var costo_exceso = exceso * costo_m_c;
 
                 s_costo_exceso = costo_exceso;
 
-                arr_cosumo.push({
+                arr_cosumop.push({
                     exceso: costo_exceso
                 });
 
-                
-                $scope.saldosEx = arr_cosumo;
+
+                $scope.saldosEx = arr_cosumop;
 
 
                 /*   console.log('costo: ', consumo)
                    console.log('exceso: ', exceso)*/
-                console.log('costo exceso: ', costo_exceso)
+                //  console.log('costo exceso: ', costo_exceso)
             } else {
-                var arr_cosumo = [];
-                console.log('Consumo', consumo);
-                console.log('costo exceso: ', 0)
-                arr_cosumo.push({
+
+                //console.log('Consumo', consumo);
+                // console.log('costo exceso: ', 0)
+                arr_cosumoneg.push({
                     exceso: 0
                 });
-                $scope.costo_exceso = arr_cosumo;
+                $scope.costo_exceso = arr_cosumoneg;
             }
         }
+
+        /**
+        *  ------------------------------------------------------------------
+        */
+
+
+
+        function cargarTransacciones(id, condomino) {
+
+
+            /**
+             * Obtener valor entrante de trnsaccion
+             */
+
+            var x = 0;
+            if (x < 1)
+                getValorEntrante(id, condomino.$id);
+
+        }
+
+
+        function getValorEntrante(a, b) {
+
+
+            transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on("value", function (snapshot) {
+                //console.log(snapshot.val());
+                snapshot.forEach(function (data) {
+                    if (data.val()) {
+                        console.log(data.key);
+                    }
+
+                });
+            });
+
+        }
+
 
 
 
