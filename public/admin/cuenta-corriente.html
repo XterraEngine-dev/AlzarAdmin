@@ -145,8 +145,9 @@
                             <td>
                                 <i ng-click="modalSalientes(condominio)" class="black-text center-align material-icons center">trending_up</i>
                             </td>
-                            <td >
-                                {{- saldosTransacPos[$index].pos + saldosTransacNeg[$index].neg}}
+                            <td ng-repeat="saliente in salientes" ng-if="saliente.id_condomino == condominio.$id">
+
+                                {{-saliente.valor}}
 
                                 <!--saldosAP[$index].pos + saldosAN[$index].neg +saldosEx[$index].exceso + saldosMant[$index].cuota -->
                             </td>

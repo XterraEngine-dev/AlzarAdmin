@@ -69,11 +69,8 @@ var arr_cosumoneg = [];
 var arr_neg = [];
 var arr_pos = [];
 
-var t_neg = [];
-var t_pos = [];
-
-var arr_transac_pos = [];
-var arr_transac_neg = [];
+var arrayListEntrantes = [];
+var arrayListSalientes = [];
 
 (function () {
     var app = angular.module("app", ["firebase"]);
@@ -1017,150 +1014,109 @@ var arr_transac_neg = [];
         function cargarTransacciones(id, condomino) {
 
 
-            // console.log(id, condomino)
+           
 
 
+            getSalientes(id, condomino.$id).then(valor => {
+                console.log('salientes', valor)
 
-            $timeout(function () {
-                getValorEntrante(id, condomino.$id).then(total_pos => {
-                    t_pos.push({
-                        pos: total_pos,
-                        id: condomino
+                var x = groupBy(valor, 'id_condomino')
+                $scope.salientes = x;
+
+
+            }).catch(err => {
+                console.log(err)
+            })
+
+
+            getEntrantes(id, condomino.$id).then(valor => {
+                console.log('entrantes', valor)
+            }).catch(err => {
+                console.log(err)
+            })
+
+
+        }
+
+
+        var groupBy = function (miarray, prop) {
+            return miarray.reduce(function (groups, item) {
+                var val = item[prop];
+                groups[val] = groups[val] || { id_condomino: item.id_condomino, valor: 0 };
+                groups[val].valor += item.valor;
+
+                return groups;
+            }, {});
+        }
+
+        function getSalientes(a, b) {
+
+            ///  console.log(a, b)
+            return new Promise(function (resolve, reject) {
+
+                transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on("value", function (snapEquals) {
+
+                    snapEquals.forEach(function (data) {
+
+                        // traer todos las transacciones
+                        var datos = data.val();
+                        // console.log('valor', datos.valor);
+
+                        if (!datos.entrante && datos.id_condomino == b) {   //filtrar entrantes
+
+                            console.log('SALIENTES ' + b, datos.valor)
+
+                            arrayListSalientes.push({
+                                id_condomino: b,
+                                valor: datos.valor
+                            })
+
+                            resolve(arrayListSalientes)
+
+                        } else if (datos.valor == null) {
+
+                            console.log('SIN SALIENTES ' + b, 0)
+                        }
+
                     })
-                    $scope.saldosTransacPos = t_pos;
-
-                }).catch(err => {
-                    t_pos.push({
-                        pos: 0,
-                        id: condomino
-                    })
-                    $scope.saldosTransacPos = t_pos;
-                    console.log('0')
-
-                })
-                getValorSaliente(id, condomino.$id).then(total_neg => {
-                    t_neg.push({
-                        neg: total_neg,
-                        id: condomino
-                    })
-                    $scope.saldosTransacNeg = t_neg
-
-                }).catch(err => {
-                    t_neg.push({
-                        neg: 0,
-                        id: condomino
-                    })
-                    $scope.saldosTransacNeg = t_neg
-                    console.log('0')
-
                 })
             })
-            /**
-             * Obtener valor entrante de trnsaccion
-             */
-
-            //  var x = 0;
-            // if (x < 1)
-
 
 
 
 
         }
 
+        function getEntrantes(a, b) {
 
-        function getValorEntrante(a, b) {
-
-
-            console.log(a, b)
             return new Promise(function (resolve, reject) {
 
-                transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on("value", function (snapshot) {
-                    //console.log(snapshot.val());
-                    snapshot.forEach(function (data) {
-                        if (data.val()) {
-                            console.log(data.key);
+                transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on('value', function (snapEquals) {
+
+                    snapEquals.forEach(function (snapvalues) {
+
+                        if (snapvalues.val()) {
+
+                            var datos = snapvalues.val();
+
+                            if (datos.entrante && datos.id_condomino == b) {
+
+                                console.log('ENTRANTES: ' + b, datos.valor)
+
+                                arrayListEntrantes.push({
+                                    id_condomino: b,
+                                    valor: datos.valor
+                                })
+
+                                resolve(arrayListEntrantes)
 
 
-                            transaccion_ref.child(a).child(data.key).once("value").then(function (snapinter) {
-
-                                if (snapinter.val()) {
-                                    var values = snapinter.val();
-                                    if (values.entrante == false) {
-                                        arr_transac_pos.push({
-                                            valor: values.valor
-                                        })
-
-                                        $timeout(function () {
-                                            var total_pos = 0;
-                                            arr_transac_pos.forEach(function (obj) {
-                                                total_pos += parseInt(obj.valor);
-                                            });
-
-                                            resolve(total_pos)
-
-                                        })
-                                        console.log('push')
-
-                                    } else if (values.entrante == null) {
-                                        reject(0)
-                                    }
-                                }
-                                else {
-                                    console.log('reject')
-                                    reject(0)
-                                }
-                            })
+                            } else if (datos.valor == null) {
+                                console.log('SIN ENTRANTES' + b, 0)
+                            }
                         }
-
-                    });
-
-                });
-
-            });
-        }
-
-        function getValorSaliente(a, b) {
-            return new Promise(function (resolve, reject) {
-                transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on("value", function (snapshot) {
-                    //console.log(snapshot.val());
-                    snapshot.forEach(function (data) {
-                        if (data.val()) {
-                            console.log(data.key);
-
-
-                            transaccion_ref.child(a).child(data.key).once("value").then(function (snapinter) {
-
-                                if (snapinter.val()) {
-                                    var values = snapinter.val();
-                                    if (values.entrante) {
-                                        arr_transac_neg.push({
-                                            valor: values.valor
-                                        })
-                                        $timeout(function () {
-                                            var total_neg = 0;
-                                            arr_transac_neg.forEach(function (obj) {
-                                                total_neg += parseInt(obj.valor);
-                                            });
-
-                                            resolve(total_neg)
-                                            console.log('push')
-                                        })
-
-                                    } else if (values.entrante == null) {
-                                        reject(0);
-                                    }
-                                }
-                                else {
-                                    console.log('reject')
-                                    reject(0);
-                                }
-                            })
-                        }
-
-                    });
-
-                });
+                    })
+                })
             })
         }
 
