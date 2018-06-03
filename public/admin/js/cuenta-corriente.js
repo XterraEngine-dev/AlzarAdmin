@@ -69,6 +69,12 @@ var arr_cosumoneg = [];
 var arr_neg = [];
 var arr_pos = [];
 
+var t_neg = [];
+var t_pos = [];
+
+var arr_transac_pos = [];
+var arr_transac_neg = [];
+
 (function () {
     var app = angular.module("app", ["firebase"]);
 
@@ -218,7 +224,7 @@ var arr_pos = [];
 
 
                                 cargarSaldo(id, condomino);
-                                cargarTransacciones(id, condomino);
+
 
                                 firebase.database().ref("lecturas").child($scope.condominioSeleccionado).child(condomino.contador).child(mesT + "-" + anioT).once("value").then(function (s) {
                                     var da = s.val();
@@ -744,7 +750,7 @@ var arr_pos = [];
              */
             //  if (x < 1) {
             $timeout(function () {
-
+                cargarTransacciones(u_condominio, u_condomino);
 
 
                 /* LOGS propiedades de condomino
@@ -1011,13 +1017,54 @@ var arr_pos = [];
         function cargarTransacciones(id, condomino) {
 
 
+            // console.log(id, condomino)
+
+
+
+            $timeout(function () {
+                getValorEntrante(id, condomino.$id).then(total_pos => {
+                    t_pos.push({
+                        pos: total_pos,
+                        id: condomino
+                    })
+                    $scope.saldosTransacPos = t_pos;
+
+                }).catch(err => {
+                    t_pos.push({
+                        pos: 0,
+                        id: condomino
+                    })
+                    $scope.saldosTransacPos = t_pos;
+                    console.log('0')
+
+                })
+                getValorSaliente(id, condomino.$id).then(total_neg => {
+                    t_neg.push({
+                        neg: total_neg,
+                        id: condomino
+                    })
+                    $scope.saldosTransacNeg = t_neg
+
+                }).catch(err => {
+                    t_neg.push({
+                        neg: 0,
+                        id: condomino
+                    })
+                    $scope.saldosTransacNeg = t_neg
+                    console.log('0')
+
+                })
+            })
             /**
              * Obtener valor entrante de trnsaccion
              */
 
-            var x = 0;
-            if (x < 1)
-                getValorEntrante(id, condomino.$id);
+            //  var x = 0;
+            // if (x < 1)
+
+
+
+
 
         }
 
@@ -1025,18 +1072,97 @@ var arr_pos = [];
         function getValorEntrante(a, b) {
 
 
-            transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on("value", function (snapshot) {
-                //console.log(snapshot.val());
-                snapshot.forEach(function (data) {
-                    if (data.val()) {
-                        console.log(data.key);
-                    }
+            console.log(a, b)
+            return new Promise(function (resolve, reject) {
+
+                transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on("value", function (snapshot) {
+                    //console.log(snapshot.val());
+                    snapshot.forEach(function (data) {
+                        if (data.val()) {
+                            console.log(data.key);
+
+
+                            transaccion_ref.child(a).child(data.key).once("value").then(function (snapinter) {
+
+                                if (snapinter.val()) {
+                                    var values = snapinter.val();
+                                    if (values.entrante == false) {
+                                        arr_transac_pos.push({
+                                            valor: values.valor
+                                        })
+
+                                        $timeout(function () {
+                                            var total_pos = 0;
+                                            arr_transac_pos.forEach(function (obj) {
+                                                total_pos += parseInt(obj.valor);
+                                            });
+
+                                            resolve(total_pos)
+
+                                        })
+                                        console.log('push')
+
+                                    } else if (values.entrante == null) {
+                                        reject(0)
+                                    }
+                                }
+                                else {
+                                    console.log('reject')
+                                    reject(0)
+                                }
+                            })
+                        }
+
+                    });
 
                 });
-            });
 
+            });
         }
 
+        function getValorSaliente(a, b) {
+            return new Promise(function (resolve, reject) {
+                transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on("value", function (snapshot) {
+                    //console.log(snapshot.val());
+                    snapshot.forEach(function (data) {
+                        if (data.val()) {
+                            console.log(data.key);
+
+
+                            transaccion_ref.child(a).child(data.key).once("value").then(function (snapinter) {
+
+                                if (snapinter.val()) {
+                                    var values = snapinter.val();
+                                    if (values.entrante) {
+                                        arr_transac_neg.push({
+                                            valor: values.valor
+                                        })
+                                        $timeout(function () {
+                                            var total_neg = 0;
+                                            arr_transac_neg.forEach(function (obj) {
+                                                total_neg += parseInt(obj.valor);
+                                            });
+
+                                            resolve(total_neg)
+                                            console.log('push')
+                                        })
+
+                                    } else if (values.entrante == null) {
+                                        reject(0);
+                                    }
+                                }
+                                else {
+                                    console.log('reject')
+                                    reject(0);
+                                }
+                            })
+                        }
+
+                    });
+
+                });
+            })
+        }
 
 
 

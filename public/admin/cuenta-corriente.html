@@ -145,9 +145,12 @@
                             <td>
                                 <i ng-click="modalSalientes(condominio)" class="black-text center-align material-icons center">trending_up</i>
                             </td>
-                            <td>
-                                {{-saldosAP[$index].pos + saldosAN[$index].neg +saldosEx[$index].exceso + saldosMant[$index].cuota}}
+                            <td >
+                                {{- saldosTransacPos[$index].pos + saldosTransacNeg[$index].neg}}
 
+                                <!--saldosAP[$index].pos + saldosAN[$index].neg +saldosEx[$index].exceso + saldosMant[$index].cuota -->
+                            </td>
+                            <td>
 
                             </td>
                         </tr>
