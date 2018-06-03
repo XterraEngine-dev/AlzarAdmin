@@ -126,7 +126,8 @@
                             <th>Cuenta Corriente</th>
                             <th>Entrante</th>
                             <th>Saliente</th>
-                            <th>saldo</th>
+                            <th>Total</th>
+
                         </tr>
                     </thead>
 
@@ -145,13 +146,15 @@
                             <td>
                                 <i ng-click="modalSalientes(condominio)" class="black-text center-align material-icons center">trending_up</i>
                             </td>
-                            <td ng-repeat="saliente in salientes" ng-if="saliente.id_condomino == condominio.$id">
+                            <td id="resta" ng-repeat="saliente in salientes" ng-if="saliente.id_condomino == condominio.$id">
 
-                                {{-saliente.valor}}
 
-                                <!--saldosAP[$index].pos + saldosAN[$index].neg +saldosEx[$index].exceso + saldosMant[$index].cuota -->
+                                <h6 id="suma" ng-repeat="entrante in entrantes" ng-if="entrante.id_condomino == condominio.$id">
+                                    {{entrante.valor + saliente.valor }}
+
+                                </h6>
                             </td>
-                            <td>
+                            <td id="suma" ng-repeat="entrante in entrantes" ng-if="entrante.id_condomino == condominio.$id">
 
                             </td>
                         </tr>

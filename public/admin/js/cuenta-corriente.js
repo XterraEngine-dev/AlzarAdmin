@@ -72,9 +72,13 @@ var arr_pos = [];
 var arrayListEntrantes = [];
 var arrayListSalientes = [];
 
+var arrayListRestar = [];
+
+var arrayListSumAlmacen = [];
+var arrayListRestAlmacen = [];
+
 (function () {
     var app = angular.module("app", ["firebase"]);
-
 
     app.controller('ctrl', function ($scope, $firebaseAuth, $firebaseArray, $http, $filter, $timeout) {
         var time = new Date(), anio = time.getFullYear();
@@ -130,6 +134,8 @@ var arrayListSalientes = [];
                                 var data = snapshot.val();
                                 $scope.userData = data;
                                 if (data.condominio) {
+
+
                                     $scope.cargarCondominio(data.condominio)
                                     $scope.condominioSeleccionado = data.condominio;
 
@@ -1014,7 +1020,7 @@ var arrayListSalientes = [];
         function cargarTransacciones(id, condomino) {
 
 
-           
+
 
 
             getSalientes(id, condomino.$id).then(valor => {
@@ -1024,6 +1030,8 @@ var arrayListSalientes = [];
                 $scope.salientes = x;
 
 
+                arrayListSumAlmacen.push(x)
+
             }).catch(err => {
                 console.log(err)
             })
@@ -1031,9 +1039,16 @@ var arrayListSalientes = [];
 
             getEntrantes(id, condomino.$id).then(valor => {
                 console.log('entrantes', valor)
+
+                var z = groupBy(valor, 'id_condomino')
+                $scope.entrantes = z;
+                arrayListRestAlmacen.push(z)
+
             }).catch(err => {
                 console.log(err)
             })
+
+
 
 
         }
@@ -1068,7 +1083,7 @@ var arrayListSalientes = [];
 
                             arrayListSalientes.push({
                                 id_condomino: b,
-                                valor: datos.valor
+                                valor: -datos.valor
                             })
 
                             resolve(arrayListSalientes)
@@ -1123,7 +1138,10 @@ var arrayListSalientes = [];
 
 
 
+
         $(document).ready(function () {
+
+
             $('ul.tabs').tabs();
             $('select').material_select();
             $('.collapsible').collapsible();
