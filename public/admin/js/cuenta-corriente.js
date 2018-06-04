@@ -77,6 +77,10 @@ var arrayListRestar = [];
 var arrayListSumAlmacen = [];
 var arrayListRestAlmacen = [];
 
+
+
+var arrayListCuotaAgua = [];
+
 (function () {
     var app = angular.module("app", ["firebase"]);
 
@@ -227,6 +231,7 @@ var arrayListRestAlmacen = [];
 
 
                                 cargarSaldo(id, condomino);
+                                cargar_exceso(condomino.condominio, condomino.$id);
 
 
                                 firebase.database().ref("lecturas").child($scope.condominioSeleccionado).child(condomino.contador).child(mesT + "-" + anioT).once("value").then(function (s) {
@@ -290,7 +295,6 @@ var arrayListRestAlmacen = [];
 
 
                             //Cargar el exceso a todos los condominos
-                            cargar_exceso(condomino.condominio, condomino.$id);
 
 
 
@@ -332,73 +336,53 @@ var arrayListRestAlmacen = [];
         /**
          * Cargar datos de condomino 
          */
-        var i = 0;
+
         function cargar_exceso(uid_condominio, uid_condomino) {
 
-            $scope.mesSeleccionado;
+            // console.log(uid_condominio, uid_condomino)
 
-            try {
+            condomino_ref.child(uid_condominio).child(uid_condomino).once("value").then(function (snapshot) {
 
-                /*  console.log('uid_condominio: ' + uid_condominio)
-                  console.log('uid_condomino:' + uid_condomino)*/
+                if (snapshot.val()) {
 
-                condomino_ref.child(uid_condominio).child(uid_condomino).once("value").then(function (snapshot) {
+                    var condomino = snapshot.val();
 
-                    if (snapshot.val()) {
+                    var dt = new Date();
+                    var month = dt.getMonth() + 1;
+                    var year = dt.getFullYear();
+                    var fecha_actual = "0" + month + "-" + year;
 
-                        var condomino = snapshot.val();
-
-                        var dt = new Date();
-                        var month = dt.getMonth() + 1;
-                        var year = dt.getFullYear();
-                        var fecha_actual = "0" + month + "-" + year;
-
-                        var costo_cuota_agua = condomino.costo_cuota_agua_exceso;
-                        var cuota_agua = condomino.cuota_agua;
+                    var costo_cuota_agua = condomino.costo_cuota_agua_exceso;
+                    var cuota_agua = condomino.cuota_agua;
 
 
+                    console.log('||---------------------------------||')
+                    console.log(snapshot.key)
+                    console.log(condomino.contador)
+                    console.log(condomino.costo_cuota_agua)
+                    console.log(condomino.costo_cuota_agua_exceso)
+                    console.log(condomino.cuota_agua)
+                    console.log('||---------------------------------||')
 
-                        if (i == 0) {
+                    if (snapshot.key == uid_condomino) {
+                        arrayListCuotaAgua.push({
+                            id_condomino: snapshot.key,
+                            valor: condomino.costo_cuota_agua
+                        });
 
-                            console.log('||---------------------------------||')
-                            console.log(condomino.contador)
-                            console.log(condomino.costo_cuota_agua)
-                            console.log(condomino.costo_cuota_agua_exceso)
-                            console.log(condomino.cuota_agua)
-                            console.log('||---------------------------------||')
-
-
-
-                            var contador = condomino.contador;
-                            var costoCuotaAgua = condomino.costo_cuota_agua;
-                            var costoCuotaAguaExceso = condomino.costo_cuota_agua_exceso;
-                            var limite = condomino.cuota_agua;
-
-
-
-                            // getConsumo(uid_condominio, contador, fecha_actual).then(content => console.log(content))
-
-
-
-
-                            i++;
-                        }
-
-                        var contador = condomino.contador;
-
-                        // borrar lecturas
-                        /* lecturas_ref.child('-L05boI08Qxdqv9fuvXI').child(contador).child('05-2018').set({
-                             null: null
-                         });*/
-
-
-
+                        $scope.cuotasAgua = arrayListCuotaAgua
 
                     }
-                })
-            } catch (err) {
-                // console.log(err)
-            }
+
+
+
+                    var contador = condomino.contador;
+                    var costoCuotaAgua = condomino.costo_cuota_agua;
+                    var costoCuotaAguaExceso = condomino.costo_cuota_agua_exceso;
+                    var limite = condomino.cuota_agua;
+                    var contador = condomino.contador;
+                }
+            })
 
 
 
@@ -782,8 +766,21 @@ var arrayListRestAlmacen = [];
                 var year = dt.getFullYear();
                 var fecha_actual = "0" + 5 + "-" + year;
                 var contador = u_condomino.contador;
+
+
                 getConsumo(u_condominio, contador, fecha_actual).then(consumo => calcular_exceso(
-                    consumo, u_condomino.costo_cuota_agua_exceso))
+                    consumo, u_condomino.costo_cuota_agua_exceso, u_condomino.$id)).catch(err => {
+
+                        if (!err) {
+
+                            arr_cosumop.push({
+                                id_condomino: u_condomino.$id,
+                                valor: 0
+                            });
+                            $scope.excesos = arr_cosumop;
+                        }
+
+                    })
 
 
 
@@ -811,19 +808,9 @@ var arrayListRestAlmacen = [];
 
 
 
-                //costo_amenidad(u_condominio, u_condomino.$id).then())
-
 
                 var s_costo_amenidad_total = s_costo_amenidad_neg - s_costo_amenidad_pos;
                 var total = s_costo_mantenimiento + s_costo_amenidad_total + s_costo_exceso;
-
-
-
-
-
-                //console.log('cuota', s_costo_mantenimiento)
-
-
 
 
                 arr_cuota.push({
@@ -832,20 +819,8 @@ var arrayListRestAlmacen = [];
 
                 $scope.saldosMant = arr_cuota;
 
-                //console.log('amenidad total', s_costo_amenidad_total)
-
-
-                // console.log('TOTAL:', total)
-
-
-
-
-
-
-
             })
-            //  x++
-            //}
+
         }
 
 
@@ -969,6 +944,8 @@ var arrayListRestAlmacen = [];
 
 
                         resolve(consumo)
+                    } else {
+                        reject(false)
                     }
                 }), function (err, content) {
                     resolve(content)
@@ -977,38 +954,57 @@ var arrayListRestAlmacen = [];
 
         }
 
-        function calcular_exceso(consumo, costo_m_c) {
+        function calcular_exceso(consumo, costo_m_c, uid_condomino) {
 
 
-            if (consumo > 0) {
-                //console.log('Consumo', consumo);
+            //  if (consumo > 0) {
+            //console.log('Consumo', consumo);
 
 
-                var exceso = consumo;
-                var costo_exceso = exceso * costo_m_c;
+            var exceso = consumo;
+            var costo_exceso = exceso * costo_m_c;
 
-                s_costo_exceso = costo_exceso;
+            s_costo_exceso = costo_exceso;
+
+            console.log(s_costo_exceso)
+            if (costo_exceso > 0) {
+                arr_cosumop.push({
+                    id_condomino: uid_condomino,
+                    valor: costo_exceso
+                });
+
+
+                $scope.excesos = arr_cosumop;
+            } else if (costo_exceso < 0) {
+                arr_cosumop.push({
+                    id_condomino: uid_condomino,
+                    valor: 0
+                });
+
+
+                $scope.excesos = arr_cosumop;
+            } else if (isNaN(costo_exceso)) {
 
                 arr_cosumop.push({
-                    exceso: costo_exceso
+                    id_condomino: uid_condomino,
+                    valor: 0
                 });
-
-
-                $scope.saldosEx = arr_cosumop;
-
-
-                /*   console.log('costo: ', consumo)
-                   console.log('exceso: ', exceso)*/
-                //  console.log('costo exceso: ', costo_exceso)
-            } else {
-
-                //console.log('Consumo', consumo);
-                // console.log('costo exceso: ', 0)
-                arr_cosumoneg.push({
-                    exceso: 0
-                });
-                $scope.costo_exceso = arr_cosumoneg;
+                $scope.excesos = arr_cosumop;
             }
+
+
+            /*  } else if (consumo < 0 | consumo == null) {
+                  console.log(consumo)
+                  arr_cosumop.push({
+                      id_condomino: uid_condomino,
+                      valor: 0
+                  });
+  
+  
+                  $scope.excesos = arr_cosumop;
+              }*/
+
+
         }
 
         /**
@@ -1071,6 +1067,17 @@ var arrayListRestAlmacen = [];
 
                 transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on("value", function (snapEquals) {
 
+                    if (!snapEquals.val()) {
+
+                        arrayListSalientes.push({
+                            id_condomino: b,
+                            valor: 0
+                        })
+
+                        resolve(arrayListSalientes)
+
+                    }
+
                     snapEquals.forEach(function (data) {
 
                         // traer todos las transacciones
@@ -1088,7 +1095,7 @@ var arrayListRestAlmacen = [];
 
                             resolve(arrayListSalientes)
 
-                        } else if (datos.valor == null) {
+                        } else if (!data) {
 
                             console.log('SIN SALIENTES ' + b, 0)
                         }
@@ -1107,6 +1114,16 @@ var arrayListRestAlmacen = [];
             return new Promise(function (resolve, reject) {
 
                 transaccion_ref.child(a).orderByChild('id_condomino').equalTo(b).on('value', function (snapEquals) {
+
+                    if (!snapEquals.val()) {
+                        arrayListEntrantes.push({
+                            id_condomino: b,
+                            valor: 0
+                        })
+
+                        resolve(arrayListEntrantes)
+
+                    }
 
                     snapEquals.forEach(function (snapvalues) {
 
@@ -1136,8 +1153,10 @@ var arrayListRestAlmacen = [];
         }
 
 
+        $scope.sumar = function (a) {
 
-
+            console.log(a)
+        }
 
         $(document).ready(function () {
 
