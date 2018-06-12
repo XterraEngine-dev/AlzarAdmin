@@ -117,7 +117,7 @@
                 </div>
             </nav>
             <div class="tableContainer white">
-                <table class="highlight centered  ">
+                <table class="highlight centered responsive-table">
                     <thead>
                         <tr>
 
@@ -126,6 +126,15 @@
                             <th>Cuenta Corriente</th>
                             <th>Entrante</th>
                             <th>Saliente</th>
+                            <!-- CUENTA CORRIENTE CATEGORIAS -->
+                            <th class=" blue-grey lighten-4">mantenimiento</th>
+                            <th>multas</th>
+                            <th class=" blue-grey lighten-4">extraordinarios</th>
+                            <th>amenidades</th>
+                            <th class=" blue-grey lighten-4">exceso</th>
+                            <th>reconexiones</th>
+                            <th class=" blue-grey lighten-4">convenio</th>
+                            <!-- CUENTA CORRIENTE CATEGORIAS -->
                             <th>Total</th>
 
                         </tr>
@@ -147,22 +156,42 @@
                                 <i ng-click="modalSalientes(condominio)" class="black-text center-align material-icons center">trending_up</i>
                             </td>
 
-                            <!--TRANSACCIONES-->
+                            <td class="blue-grey lighten-4" ng-repeat="cuota in cuotasAgua" ng-if="cuota.id_condomino == condominio.$id">
+                                Q{{cuota.valor}}
+                            </td>
+                            <td>
+                                multas
+                            </td>
+                            <td class=" blue-grey lighten-4">
+                                extraordinarios
+                            </td>
+                            <td>
+                                amenidades
+                            </td>
+                            <td class=" blue-grey lighten-4" ng-repeat="exceso in excesos" ng-if="exceso.id_condomino == condominio.$id">
+                                Q{{exceso.valor}}
+                            </td>
+                            <td>
+                                reconexiones
+                            </td>
+                            <td class=" blue-grey lighten-4">
+                                convenio
+                            </td>
 
-
+                            <!--TOTAL-->
                             <td>
                                 <ul ng-repeat="cuota in cuotasAgua" ng-if="cuota.id_condomino == condominio.$id">
-                                    Mentenimiento: {{cuota.valor}}
+                                    <!-- Mentenimiento: {{cuota.valor}} -->
 
                                     <li ng-repeat="exceso in excesos" ng-if="exceso.id_condomino == condominio.$id">
-                                        Exceso: {{exceso.valor}}
+                                        <!-- Exceso: {{exceso.valor}} -->
                                         <ul ng-repeat="saliente in salientes" ng-if="saliente.id_condomino == condominio.$id">
-                                            salientes: {{saliente.valor}}
+                                            <!-- salientes: {{saliente.valor}} -->
                                             <li ng-repeat="entrante in entrantes" ng-if="entrante.id_condomino == condominio.$id">
-                                                entrantes: {{entrante.valor}}
+                                                <!-- entrantes: {{entrante.valor}} -->
 
-                                                <ul >
-                                                    Total:{{cuota.valor + exceso.valor+entrante.valor + saliente.valor }}
+                                                <ul>
+                                                    Q{{cuota.valor + exceso.valor+entrante.valor + saliente.valor }}
 
                                                 </ul>
 
@@ -174,7 +203,7 @@
 
                                 </ul>
                             </td>
-                            <!--TRANSACCIONES-->
+                            <!--TOTAL FIN-->
 
                             <td id="suma" ng-repeat="entrante in entrantes" ng-if="entrante.id_condomino == condominio.$id">
 

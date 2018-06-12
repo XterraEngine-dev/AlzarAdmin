@@ -75,7 +75,15 @@ var obj, tipo, condominios;
 
                         $scope.new.foto = downloadURL;
                         $scope.new.fecha_creacion = timeStamp;
-                        $scope.new.condominio_nombre = condominios[condominios.$indexFor($scope.new.condominio)].nombre;
+
+                        try{
+                            $scope.new.condominio_nombre = condominios[condominios.$indexFor($scope.new.condominio)].nombre; 
+                        }catch{
+                            $scope.new.condominio_nombre = "TODOS";
+                        }
+
+                 
+            
                         $scope.new.creador = $scope.user.email;
 
                         $.ajax({
@@ -224,7 +232,7 @@ var obj, tipo, condominios;
 
                     var downloadURL = uploadTask.snapshot.downloadURL;
 
-                    $scope.editar.logo = downloadURL;
+                    $scope.editar.foto = downloadURL;
 
                     obj.$save($scope.editar).then(function (ref) {
                         Materialize.toast("Se ha modificado el logo", 5000);
