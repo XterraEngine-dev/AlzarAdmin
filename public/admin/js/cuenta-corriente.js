@@ -20,8 +20,6 @@ var movimientosref = firebase.database().ref('cuenta_corriente').child('movimien
 var ultimoPagoref = firebase.database().ref('cuenta_corriente').child('ultimo_pago');
 
 var saldosref = firebase.database().ref('cuenta_corriente').child('saldos');
-var condomino_ref = firebase.database().ref('condominos');
-var lecturas_ref = firebase.database().ref('lecturas');
 
 
 
@@ -736,90 +734,90 @@ var arrayListCuotaAgua = [];
              * SUMAR CUENTAS
              */
             //  if (x < 1) {
-            $timeout(function () {
-                cargarTransacciones(u_condominio, u_condomino);
+            // $timeout(function () {
+            cargarTransacciones(u_condominio, u_condomino);
 
 
-                /* LOGS propiedades de condomino
-                console.log(u_condominio)
-                console.log(u_condomino.$id)
-                console.log(u_condomino.costo_cuota_agua)
-                console.log(u_condomino.costo_cuota_agua_exceso)
-                console.log(u_condomino.cuota_agua)*/
+            /* LOGS propiedades de condomino
+            console.log(u_condominio)
+            console.log(u_condomino.$id)
+            console.log(u_condomino.costo_cuota_agua)
+            console.log(u_condomino.costo_cuota_agua_exceso)
+            console.log(u_condomino.cuota_agua)*/
 
-                // Prefijo S_ para variables de sumatoria.
+            // Prefijo S_ para variables de sumatoria.
 
-                /**
-                 * CUOTA DE MANTENIMIENTO
-                 */
+            /**
+             * CUOTA DE MANTENIMIENTO
+             */
 
-                var s_mantenimiento = u_condomino.cuota_agua;
-                //  console.log('cuota de mantenimiento', s_mantenimiento)
-                s_costo_mantenimiento = s_mantenimiento;
+            var s_mantenimiento = u_condomino.cuota_agua;
+            //  console.log('cuota de mantenimiento', s_mantenimiento)
+            s_costo_mantenimiento = s_mantenimiento;
 
-                /**
-                 * Exceso de Agua
-                 */
+            /**
+             * Exceso de Agua
+             */
 
-                var dt = new Date();
-                var month = dt.getMonth() + 1;
-                var year = dt.getFullYear();
-                var fecha_actual = "0" + 5 + "-" + year;
-                var contador = u_condomino.contador;
-
-
-                getConsumo(u_condominio, contador, fecha_actual).then(consumo => calcular_exceso(
-                    consumo, u_condomino.costo_cuota_agua_exceso, u_condomino.$id)).catch(err => {
-
-                        if (!err) {
-
-                            arr_cosumop.push({
-                                id_condomino: u_condomino.$id,
-                                valor: 0
-                            });
-                            $scope.excesos = arr_cosumop;
-                        }
-
-                    })
+            var dt = new Date();
+            var month = dt.getMonth() + 1;
+            var year = dt.getFullYear();
+            var fecha_actual = "0" + 5 + "-" + year;
+            var contador = u_condomino.contador;
 
 
+            getConsumo(u_condominio, contador, fecha_actual).then(consumo => calcular_exceso(
+                consumo, u_condomino.costo_cuota_agua_exceso, u_condomino.$id)).catch(err => {
 
+                    if (!err) {
 
-                /**
-                 * Amenidades 
-                 */
+                        arr_cosumop.push({
+                            id_condomino: u_condomino.$id,
+                            valor: 0
+                        });
+                        $scope.excesos = arr_cosumop;
+                    }
 
-
-                //cargar_amenidad(u_condominio, u_condomino.$id)
-
-
-
-
-                costo_amenidad_pos(u_condominio, u_condomino.$id).then(
-                    amenidadades_pos => exportPos(amenidadades_pos)
-                );
-
-
-
-
-                costo_amenidad_neg(u_condominio, u_condomino.$id).then(
-                    amenidadades_neg => exportNeg(amenidadades_neg)
-                );
-
-
-
-
-                var s_costo_amenidad_total = s_costo_amenidad_neg - s_costo_amenidad_pos;
-                var total = s_costo_mantenimiento + s_costo_amenidad_total + s_costo_exceso;
-
-
-                arr_cuota.push({
-                    cuota: s_costo_mantenimiento
                 })
 
-                $scope.saldosMant = arr_cuota;
 
+
+
+            /**
+             * Amenidades 
+             */
+
+
+            //cargar_amenidad(u_condominio, u_condomino.$id)
+
+
+
+
+            costo_amenidad_pos(u_condominio, u_condomino.$id).then(
+                amenidadades_pos => exportPos(amenidadades_pos)
+            );
+
+
+
+
+            costo_amenidad_neg(u_condominio, u_condomino.$id).then(
+                amenidadades_neg => exportNeg(amenidadades_neg)
+            );
+
+
+
+
+            var s_costo_amenidad_total = s_costo_amenidad_neg - s_costo_amenidad_pos;
+            var total = s_costo_mantenimiento + s_costo_amenidad_total + s_costo_exceso;
+
+
+            arr_cuota.push({
+                cuota: s_costo_mantenimiento
             })
+
+            $scope.saldosMant = arr_cuota;
+
+            // })
 
         }
 
@@ -877,9 +875,9 @@ var arrayListCuotaAgua = [];
                                 //console.log('saliente', child.total)
                                 amenidadades_pos.push(child.total)
 
-                                $timeout(function () {
-                                    resolve(amenidadades_pos)
-                                });
+                                //$timeout(function () {
+                                resolve(amenidadades_pos)
+                                //});
                             }
                         });
 
@@ -893,6 +891,14 @@ var arrayListCuotaAgua = [];
                 }), function (err, content) {
                     resolve(content)
                 };
+
+                amenidad_ref.$loaded().then(function () {
+                    if (logs.length > 0) {
+                        Materialize.toast("amenidad cargada", 2000);
+                    } else {
+                        Materialize.toast("no hay amenidades cargadas", 2000);
+                    }
+                });
             });
         }
 
@@ -911,9 +917,9 @@ var arrayListCuotaAgua = [];
 
                                 amenidadades_neg.push(child.total);
 
-                                $timeout(function () {
-                                    resolve(amenidadades_neg)
-                                })
+                                //$timeout(function () {
+                                resolve(amenidadades_neg)
+                                //})
                             }
 
                         });
@@ -929,6 +935,8 @@ var arrayListCuotaAgua = [];
                     resolve(content)
                 };
             });
+
+            
         }
 
         function getConsumo(uid_condo, contador, fecha) {
@@ -950,6 +958,14 @@ var arrayListCuotaAgua = [];
                 }), function (err, content) {
                     resolve(content)
                 };
+            });
+
+            lecturas_ref.$loaded().then(function () {
+                if (logs.length > 0) {
+                    Materialize.toast("lecturas cargadas", 2000);
+                } else {
+                    Materialize.toast("no hay amenidades lecturas", 2000);
+                }
             });
 
         }

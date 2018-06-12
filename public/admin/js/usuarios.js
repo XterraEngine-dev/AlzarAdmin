@@ -20,6 +20,11 @@ firebase.auth().onAuthStateChanged(function (user) {
                             </a>
                         </li>
                         <li>
+                        <a href="registros-logs.html">
+                            <i class="material-icons">assessment</i>Registros
+                        </a>
+                    </li>
+                        <li>
                         <a href="reservarAmenidad.html">
                             <i class="material-icons">playlist_add</i>Reservar Amenidad
                         </a>

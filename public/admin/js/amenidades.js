@@ -193,14 +193,18 @@ var obj, tipo, condominios, album, fechas, horarios;
         }
 
         $scope.eliminarModal = function (i) {
+
             $scope.editar = i
+            console.log('i', i)
             $("#eliminarModal").modal("open")
         }
-        $scope.elimnar = function () {
+        $scope.eliminar = function () {
+
             obj.$remove($scope.editar).then(function (ref) {
                 Materialize.toast("Se ha eliminado la Amenidad", 8000);
             });
         }
+
 
         $scope.cargarCondominio = function (id) {
             console.log($scope.condominioSeleccionado, id)
@@ -405,7 +409,7 @@ var obj, tipo, condominios, album, fechas, horarios;
         $scope.guardarHTML = function (id) {
             $scope.editar[$scope.propiedad] = tinymce.activeEditor.getContent()
             $scope.data.$save($scope.editar).then(function (ref) {
-                
+
             });
         }
 
